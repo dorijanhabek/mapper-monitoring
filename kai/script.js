@@ -1,0 +1,170 @@
+// Configurable time variables (in milliseconds)
+const POLL_INTERVAL = 10000; // How often to check for alerts
+const NORMAL_DURATION = 3; // Number of intervals to stay in the normal state before transitioning to working
+const ERROR_DURATION = 3; // Number of intervals to stay in the error state before transitioning to error-working
+const ANIMATION_DELAY = 2000; // Delay for animations in working and error-working states
+
+// State and timeout management
+let stateTimeout;
+let pulseTimeout;
+let alertPollInterval;
+let errorCount = 0; // Tracks how many intervals the error state has persisted
+let normalCount = 0; // Tracks how many intervals the normal state has persisted
+let currentState = 'normal'; // Tracks the current state
+
+function setRandomGlitchDirections() {
+    const kai = document.getElementById('kai');
+    const glitchIntensity = Math.random() * 300; // Randomize intensity dynamically (0 to 300px)
+
+    // Randomize directions for each axis
+    kai.style.setProperty('--x1', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    kai.style.setProperty('--y1', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    kai.style.setProperty('--x2', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    kai.style.setProperty('--y2', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    kai.style.setProperty('--x3', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    kai.style.setProperty('--y3', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    kai.style.setProperty('--x4', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    kai.style.setProperty('--y4', `${(Math.random() - 0.5) * glitchIntensity}px`);
+}
+
+async function checkAlerts() {
+    console.log(`[CHECK ALERTS] Checking for alerts...`);
+    try {
+        const response = await fetch('./alerts.json'); // Fetch alerts.json file in the same folder
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.hasActiveAlerts) {
+            console.log(`[ALERT FOUND] Active alerts detected.`);
+            if (currentState === 'error') {
+                errorCount++;
+                console.log(
+                    `[ERROR STATE] Staying in 'error' state. ${ERROR_DURATION - errorCount} intervals before transitioning to 'error-working'.`
+                );
+                if (errorCount >= ERROR_DURATION) {
+                    console.log(`[STATE TRANSITION] Changing state to 'error-working'.`);
+                    setState('error-working');
+                }
+            } else if (currentState === 'error-working') {
+                console.log(`[ERROR-WORKING STATE] Alerts still present. Staying in 'error-working' state.`);
+            } else {
+                console.log(`[STATE TRANSITION] Changing state to 'error'.`);
+                errorCount = 0; // Reset error counter
+                setState('error');
+            }
+        } else {
+            console.log(`[NO ALERTS] No active alerts detected.`);
+            if (currentState === 'error-working' || currentState === 'error') {
+                console.log(`[STATE TRANSITION] Changing state to 'normal'.`);
+                errorCount = 0; // Reset error counter
+                setState('normal');
+            } else if (currentState === 'normal') {
+                normalCount++;
+                console.log(
+                    `[NORMAL STATE] Staying in 'normal' state. ${NORMAL_DURATION - normalCount} intervals before transitioning to 'working'.`
+                );
+                if (normalCount >= NORMAL_DURATION) {
+                    console.log(`[STATE TRANSITION] Changing state to 'working'.`);
+                    setState('working');
+                }
+            } else if (currentState === 'working') {
+                console.log(`[WORKING STATE] Staying in 'working' state.`);
+            }
+        }
+    } catch (error) {
+        console.error('[ERROR] Error checking alerts:', error);
+    }
+}
+
+window.setState = function (state) {
+    const kai = document.getElementById('kai');
+    const innerCircle = kai.querySelector('.inner-circle');
+
+    // Clear any pending timeouts
+    clearTimeout(stateTimeout);
+    clearTimeout(pulseTimeout);
+
+    console.log(`[SET STATE] Transitioning from ${currentState} to ${state}`);
+    currentState = state; // Update the current state
+
+    switch (state) {
+        case 'normal':
+            kai.className = 'circle normal';
+            console.log(`[STATE NORMAL] Entering 'normal' state.`);
+            normalCount = 0; // Reset normal state counter
+            stateTimeout = setTimeout(() => {
+                console.log(`[STATE TRANSITION] Attempting to transition to 'working' state.`);
+                setState('working');
+            }, NORMAL_DURATION * POLL_INTERVAL);
+            break;
+
+        case 'working':
+            kai.className = 'circle normal working';
+            console.log(`[STATE WORKING] Entering 'working' state.`);
+            pulseTimeout = setTimeout(() => {
+                innerCircle.classList.add('animate');
+            }, ANIMATION_DELAY);
+            break;
+
+        case 'error':
+            console.log(`[STATE ERROR] Entering 'error' state.`);
+            kai.className = 'circle error glitch-active';
+        
+            const glitchDuration = 2000; // Total glitch duration in ms
+            const glitchInterval = 300; // Time between each glitch step in ms
+        
+            const glitchEffect = setInterval(() => {
+                setRandomGlitchDirections(); // Apply a new random glitch
+            }, glitchInterval);
+        
+            setTimeout(() => {
+                clearInterval(glitchEffect); // Stop the glitch effect
+                kai.classList.remove('glitch-active');
+                kai.classList.add('error'); // Set to the final error state
+            }, glitchDuration);
+            break;  
+
+        case 'error-working':
+            kai.className = 'circle error working';
+            console.log(`[STATE ERROR-WORKING] Entering 'error-working' state.`);
+            pulseTimeout = setTimeout(() => {
+                innerCircle.classList.add('animate');
+            }, ANIMATION_DELAY);
+            break;
+    }
+};
+
+const circle = document.querySelector('.circle');
+
+document.addEventListener('mousemove', (event) => {
+    const rect = circle.getBoundingClientRect(); // Get the position of the circle
+    const circleCenterX = rect.left + rect.width / 2;
+    const circleCenterY = rect.top + rect.height / 2;
+
+    // Adjust the divisor to increase or decrease movement distance
+    const sensitivity = 10; // Lower this value to increase movement distance
+    const offsetX = (event.clientX - circleCenterX) / sensitivity;
+    const offsetY = (event.clientY - circleCenterY) / sensitivity;
+
+    // Apply the offset as a transform
+    circle.style.transition = 'transform 1s ease-out'; // Smooth start when following the cursor
+    circle.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+});
+
+
+// Reset the circle to the center slowly when the cursor leaves the screen
+document.addEventListener('mouseleave', () => {
+    circle.style.transition = 'transform 1s ease-out'; // Slow return to center
+    circle.style.transform = 'translate(0, 0)'; // Reset position
+});
+
+// Start polling for alerts based on the interval
+console.log(`[INIT] Starting alert polling every ${POLL_INTERVAL / 1000} seconds.`);
+alertPollInterval = setInterval(checkAlerts, POLL_INTERVAL);
+
+// Initialize state
+console.log(`[INIT] Initializing state to 'normal'.`);
+setState('normal');

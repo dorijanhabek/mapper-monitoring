@@ -1,0 +1,189 @@
+body {
+    background-color: black;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.circle {
+    width: 300px;
+    height: 300px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-origin: center;
+}
+
+.outer-ring {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: absolute;
+    border: 24px solid transparent;
+    box-shadow: 0 0 40px transparent;
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.middle-ring {
+    width: 85%;
+    height: 85%;
+    border-radius: 50%;
+    position: absolute;
+    border: 2px solid transparent;
+    box-shadow: 0 0 20px transparent;
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.inner-circle {
+    width: 65%;
+    height: 65%;
+    border-radius: 50%;
+    position: absolute;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 2s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 2s cubic-bezier(0.4, 0, 0.2, 1),
+                background 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Normal State */
+.normal .outer-ring {
+    border-color: #00ffcc;
+    box-shadow: 0 0 40px #00ffcc;
+}
+
+.normal .middle-ring {
+    border-color: #00ffcc;
+    box-shadow: 0 0 20px #00ffcc;
+}
+
+/* Error State */
+.error .outer-ring {
+    border-color: #ff0000;
+    box-shadow: 0 0 60px #ff0000;
+}
+
+.error .middle-ring {
+    border-color: #ff0000;
+    box-shadow: 0 0 30px #ff0000;
+}
+
+/* Working States */
+.working .inner-circle {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.working .inner-circle.animate {
+    animation: pulse 4s ease-in-out infinite;
+}
+
+.normal.working .inner-circle {
+    background: radial-gradient(
+        circle,
+        rgba(178, 255, 244, 1) 0%,
+        rgba(178, 255, 244, 0.95) 40%,
+        rgba(0, 255, 204, 0.9) 65%,
+        rgba(0, 255, 204, 0.95) 85%,
+        #00ffcc 100%
+    );
+    box-shadow: 0 0 40px #00ffcc;
+}
+
+.error.working .inner-circle {
+    background: radial-gradient(
+        circle,
+        rgba(255, 102, 102, 1) 0%,
+        rgba(255, 51, 51, 0.95) 40%,
+        rgba(255, 0, 0, 0.9) 65%,
+        rgba(204, 0, 0, 0.95) 85%,
+        #cc0000 100%
+    );
+    box-shadow: 0 0 40px #cc0000;
+}
+
+.glitch-active {
+    animation: container-distort 1.5s ease-in-out;
+}
+
+.glitch-active .outer-ring,
+.glitch-active .middle-ring,
+.glitch-active .inner-circle {
+    animation: liquid-distort 1.5s ease-in-out;
+}
+
+.circle.glitch-active {
+    animation: glitchEffect 0.3s infinite;
+}
+
+@keyframes container-distort {
+    0% { transform: scale(1) skew(0deg); }
+    15% { transform: scale(1.03) skew(4deg, -3deg); }
+    30% { transform: scale(0.95) skew(-5deg, 2deg); }
+    45% { transform: scale(1.04) skew(2deg, 4deg); }
+    60% { transform: scale(0.96) skew(-3deg, -3deg); }
+    75% { transform: scale(1.02) skew(3deg, 1deg); }
+    90% { transform: scale(0.98) skew(-2deg, 2deg); }
+    100% { transform: scale(1) skew(0deg); }
+}
+
+@keyframes glitchEffect {
+    0% {
+        transform: translate(0, 0);
+    }
+    33% {
+        transform: translate(5px, -5px);
+    }
+    66% {
+        transform: translate(-5px, 5px);
+    }
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes liquid-distort {
+    0% { 
+        transform: translate(0) scale(1);
+        filter: brightness(1) blur(0);
+    }
+    20% { 
+        transform: translate(var(--x1, 150px), var(--y1, -120px)) scale(1.15);
+        filter: brightness(1.7) blur(6px);
+    }
+    40% { 
+        transform: translate(var(--x2, -170px), var(--y2, 130px)) scale(0.85);
+        filter: brightness(1.4) blur(4px);
+    }
+    60% { 
+        transform: translate(var(--x3, 190px), var(--y3, 90px)) scale(1.12);
+        filter: brightness(1.9) blur(7px);
+    }
+    80% { 
+        transform: translate(var(--x4, -130px), var(--y4, -140px)) scale(0.88);
+        filter: brightness(1.5) blur(5px);
+    }
+    100% { 
+        transform: translate(0) scale(1);
+        filter: brightness(1) blur(0);
+    }
+}
+
+@keyframes pulse {
+    0% { 
+        transform: scale(0.92);
+        opacity: 0.7;
+    }
+    50% { 
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    100% { 
+        transform: scale(0.92);
+        opacity: 0.7;
+    }
+}
