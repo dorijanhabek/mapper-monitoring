@@ -40,7 +40,7 @@ async function checkAlerts() {
 
         if (data.internalError) {
             console.log(`[INTERNAL ERROR] API reported an internal error.`);
-        
+
             if (currentState === 'internal-error') {
                 internalErrorCount++;
                 console.log(
@@ -57,10 +57,10 @@ async function checkAlerts() {
                 internalErrorCount = 0;
                 setState('internal-error');
             }
-        
+
             return;
         } else {
-            console.log(`[NO INTERNAL ERRORS] API reachable, no internal issues.`); 
+            console.log(`[NO INTERNAL ERRORS] API reachable, no internal issues.`);
         }
 
         if (data.hasActiveAlerts) {
@@ -139,20 +139,20 @@ window.setState = function (state) {
         case 'error':
             console.log(`[STATE ERROR] Entering 'error' state.`);
             kai.className = 'circle error glitch-active';
-        
+
             const glitchDuration = 2000; // Total glitch duration in ms
             const glitchInterval = 300; // Time between each glitch step in ms
-        
+
             const glitchEffect = setInterval(() => {
                 setRandomGlitchDirections(); // Apply a new random glitch
             }, glitchInterval);
-        
+
             setTimeout(() => {
                 clearInterval(glitchEffect); // Stop the glitch effect
                 kai.classList.remove('glitch-active');
                 kai.classList.add('error'); // Set to the final error state
             }, glitchDuration);
-            break;  
+            break;
 
         case 'error-working':
             kai.className = 'circle error working';
@@ -161,18 +161,18 @@ window.setState = function (state) {
                 innerCircle.classList.add('animate');
             }, ANIMATION_DELAY);
             break;
-            
+
         case 'internal-error':
             console.log(`[STATE INTERNAL-ERROR] Entering 'internal-error' state.`);
             kai.className = 'circle internal-error glitch-active';
-        
+
             const glitchDurationInternal = 2000;
             const glitchIntervalInternal = 300;
-        
+
             const glitchEffectInternal = setInterval(() => {
                 setRandomGlitchDirections();
             }, glitchIntervalInternal);
-        
+
             setTimeout(() => {
                 clearInterval(glitchEffectInternal);
                 kai.classList.remove('glitch-active');
@@ -186,7 +186,7 @@ window.setState = function (state) {
             pulseTimeout = setTimeout(() => {
                 innerCircle.classList.add('animate');
             }, ANIMATION_DELAY);
-            break;    
+            break;
     }
 };
 
@@ -214,10 +214,14 @@ document.addEventListener('mouseleave', () => {
     circle.style.transform = 'translate(0, 0)'; // Reset position
 });
 
-// Start polling for alerts based on the interval
-console.log(`[INIT] Starting alert polling every ${POLL_INTERVAL / 1000} seconds.`);
-alertPollInterval = setInterval(checkAlerts, POLL_INTERVAL);
-
 // Initialize state
 console.log(`[INIT] Initializing state to 'normal'.`);
 setState('normal');
+
+// Immediately check alerts once at startup
+console.log(`[INIT] Performing initial alert check...`);
+checkAlerts();
+
+// Start polling for alerts based on the interval
+console.log(`[INIT] Starting alert polling every ${POLL_INTERVAL / 1000} seconds.`);
+alertPollInterval = setInterval(checkAlerts, POLL_INTERVAL);
