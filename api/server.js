@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, 'kai')));
 
 // Ensure alerts.json exists with a default false state
 fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: false }, null, 2));
-console.log('[INIT] Created or reset alerts.json to default false state.');
+console.log('[INIT] Reset alerts.json to default false state.');
 
 // Function to check alerts and update the state in alerts.json
 const updateAlertState = async () => {
