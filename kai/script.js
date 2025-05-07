@@ -59,6 +59,8 @@ async function checkAlerts() {
             }
         
             return;
+        } else {
+            console.log(`[NO INTERNAL ERRORS] API reachable, no internal issues.`); 
         }
 
         if (data.hasActiveAlerts) {
