@@ -10,8 +10,8 @@ services:
       - ./kai:/usr/share/nginx/html
     restart: unless-stopped
     depends_on:
-      - prometheus
-      - alertmanager
+      - kai-prometheus
+      - kai-alertmanager
     networks:
       - kai-network
 
@@ -21,7 +21,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - alertmanager
+      - kai-alertmanager
     volumes:
       - ./kai:/app/kai
     restart: unless-stopped
