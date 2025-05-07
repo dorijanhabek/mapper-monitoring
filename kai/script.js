@@ -10,6 +10,7 @@ let pulseTimeout;
 let alertPollInterval;
 let errorCount = 0; // Tracks how many intervals the error state has persisted
 let normalCount = 0; // Tracks how many intervals the normal state has persisted
+let internalErrorCount = 0; // Tracks internal-error intervals
 let currentState = 'normal'; // Tracks the current state
 
 function setRandomGlitchDirections() {
@@ -37,6 +38,29 @@ async function checkAlerts() {
 
         const data = await response.json();
 
+        if (data.internalError) {
+            console.log(`[INTERNAL ERROR] API reported an internal error.`);
+        
+            if (currentState === 'internal-error') {
+                internalErrorCount++;
+                console.log(
+                    `[INTERNAL ERROR STATE] Staying in 'internal-error'. ${ERROR_DURATION - internalErrorCount} intervals before transitioning to 'internal-error-working'.`
+                );
+                if (internalErrorCount >= ERROR_DURATION) {
+                    console.log(`[STATE TRANSITION] Changing state to 'internal-error-working'.`);
+                    setState('internal-error-working');
+                }
+            } else if (currentState === 'internal-error-working') {
+                console.log(`[INTERNAL-ERROR-WORKING STATE] Errors still present. Staying in 'internal-error-working' state.`);
+            } else {
+                console.log(`[STATE TRANSITION] Changing state to 'internal-error'.`);
+                internalErrorCount = 0;
+                setState('internal-error');
+            }
+        
+            return;
+        }
+
         if (data.hasActiveAlerts) {
             console.log(`[ALERT FOUND] Active alerts detected.`);
             if (currentState === 'error') {
@@ -57,9 +81,10 @@ async function checkAlerts() {
             }
         } else {
             console.log(`[NO ALERTS] No active alerts detected.`);
-            if (currentState === 'error-working' || currentState === 'error') {
+            if (currentState === 'error-working' || currentState === 'error' || currentState === 'internal-error' || currentState === 'internal-error-working') {
                 console.log(`[STATE TRANSITION] Changing state to 'normal'.`);
                 errorCount = 0; // Reset error counter
+                internalErrorCount = 0;
                 setState('normal');
             } else if (currentState === 'normal') {
                 normalCount++;
@@ -134,6 +159,32 @@ window.setState = function (state) {
                 innerCircle.classList.add('animate');
             }, ANIMATION_DELAY);
             break;
+            
+        case 'internal-error':
+            console.log(`[STATE INTERNAL-ERROR] Entering 'internal-error' state.`);
+            kai.className = 'circle internal-error glitch-active';
+        
+            const glitchDurationInternal = 2000;
+            const glitchIntervalInternal = 300;
+        
+            const glitchEffectInternal = setInterval(() => {
+                setRandomGlitchDirections();
+            }, glitchIntervalInternal);
+        
+            setTimeout(() => {
+                clearInterval(glitchEffectInternal);
+                kai.classList.remove('glitch-active');
+                kai.classList.add('internal-error'); // ensures the visual style persists
+            }, glitchDurationInternal);
+            break;
+
+        case 'internal-error-working':
+            kai.className = 'circle internal-error working';
+            console.log(`[STATE INTERNAL-ERROR-WORKING] Entering 'internal-error-working' state.`);
+            pulseTimeout = setTimeout(() => {
+                innerCircle.classList.add('animate');
+            }, ANIMATION_DELAY);
+            break;    
     }
 };
 

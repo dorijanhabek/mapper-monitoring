@@ -17,20 +17,20 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'kai')));
 
 // Ensure alerts.json exists with a default false state
-fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false }, null, 2));
-console.log('[INIT] Created or reset alerts.json to default false state.');
+fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: false }, null, 2));
+console.log('[INIT] Reset alerts.json to default false state.');
 
 // Function to check alerts and update the state in alerts.json
 const updateAlertState = async () => {
     try {
-        const response = await axios.get('http://kai-alertmanager:9093/api/v2/alerts'); // Replace with your Alertmanager address
+        const response = await axios.get('http://kai-alertmanager:9093/api/v2/alerts');
         const hasActiveAlerts = response.data.length > 0;
 
-        // Update alerts.json with the new alert state
-        fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts }, null, 2));
+        fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts, internalError: false }, null, 2));
         console.log('[ALERT CHECK] Updated alert state:', { hasActiveAlerts });
     } catch (error) {
         console.error('[ERROR] Failed to fetch alerts:', error);
+        fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
     }
 };
 
