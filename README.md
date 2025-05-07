@@ -1,9 +1,5 @@
-kai-interface (frontend) – A static NGINX-hosted UI.
+Zabbix API:
 
-api (backend) – Node.js Express app polling the Alertmanager and updating a shared alerts.json file.
+![screencapture-cratis-ubuntu-lab-7080-zabbix-php-2025-05-07-23_58_51](https://github.com/user-attachments/assets/47e92a70-7bcf-40cf-8a7c-77cdf2912b0b)
 
-prometheus – Collects metrics (scrapes from node-exporter) and triggers alerts.
-
-alertmanager – Handles alerts and sends them for processing.
-
-node-exporter – Provides host-level metrics to Prometheus
+![screencapture-cratis-ubuntu-lab-7080-zabbix-php-2025-05-07-23_59_02](https://github.com/user-attachments/assets/ccf92223-099f-4c45-a71f-0cd8c800bc72)
