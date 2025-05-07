@@ -13,7 +13,7 @@ const ALERT_FILE = path.join(__dirname, 'kai', 'alerts.json');
 
 // Zabbix connection
 const ZABBIX_URL = 'http://cratis-ubuntu-lab:7080/api_jsonrpc.php';
-const ZABBIX_TOKEN = '4ab2d8598260056f4a7db1ee7787f3465ef62b937a9975764e6ed27f274d6c79'; // Replace with your API token
+const ZABBIX_TOKEN = 'a97192dca8e5ca252eeefd0f43a853ab36b94d99d812b0c09533e25c340c099b'; // Replace with your real API token
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'kai')));
@@ -25,29 +25,34 @@ console.log('[INIT] Reset alerts.json to default false state.');
 // Function to check Zabbix alerts and update alerts.json
 const updateAlertState = async () => {
     console.log('[CHECK ALERTS] Checking Zabbix for active problems...');
-    try {
-        const response = await axios.post(ZABBIX_URL, {
-            jsonrpc: '2.0',
-            method: 'problem.get',
-            params: {
-                severities: [4, 5], // High + Disaster
-                recent: true,
-                sortfield: 'eventid',
-                sortorder: 'DESC'
-            },
-            auth: ZABBIX_TOKEN,
-            id: 1
-        });
 
-        // Debug full response for visibility
+    try {
+        const response = await axios.post(
+            ZABBIX_URL,
+            {
+                jsonrpc: '2.0',
+                method: 'problem.get',
+                params: {
+                    severities: [4, 5], // High + Disaster
+                    sortfield: 'eventid',
+                    sortorder: 'DESC'
+                },
+                id: 1
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json-rpc',
+                    'Authorization': `Bearer ${ZABBIX_TOKEN}`
+                }
+            }
+        );
+
         console.log('[DEBUG] Zabbix response:', JSON.stringify(response.data, null, 2));
 
-        // Check for API-level error
         if (response.data.error) {
             throw new Error(`Zabbix API error: ${response.data.error.message} — ${response.data.error.data}`);
         }
 
-        // Validate that result is an array
         if (Array.isArray(response.data.result)) {
             const hasActiveAlerts = response.data.result.length > 0;
 
@@ -62,6 +67,10 @@ const updateAlertState = async () => {
         fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
     }
 };
+
+// Initial check
+console.log('[INIT] Performing initial Zabbix alert check...');
+updateAlertState();
 
 // Periodically update the alert status
 setInterval(updateAlertState, POLL_INTERVAL);
