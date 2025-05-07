@@ -15,7 +15,7 @@ services:
     networks:
       - kai-network
 
-  api:
+  kai-api:
     build: ./api
     container_name: kai-api
     ports:
@@ -28,7 +28,7 @@ services:
     networks:
       - kai-network
 
-  prometheus:
+  kai-prometheus:
     image: prom/prometheus:latest
     container_name: kai-prometheus
     ports:
@@ -43,7 +43,7 @@ services:
     networks:
       - kai-network
 
-  alertmanager:
+  kai-alertmanager:
     image: prom/alertmanager:latest
     container_name: kai-alertmanager
     ports:
@@ -56,7 +56,7 @@ services:
     networks:
       - kai-network
 
-  node-exporter:
+  kai-node-exporter:
     image: quay.io/prometheus/node-exporter:latest
     container_name: kai-node-exporter
     command:
