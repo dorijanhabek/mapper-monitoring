@@ -37,6 +37,12 @@ async function checkAlerts() {
 
         const data = await response.json();
 
+        if (data.internalError) {
+            console.log(`[INTERNAL ERROR] API reported an internal error.`);
+            setState('internal-error');
+            return;
+        }
+
         if (data.hasActiveAlerts) {
             console.log(`[ALERT FOUND] Active alerts detected.`);
             if (currentState === 'error') {
@@ -134,6 +140,21 @@ window.setState = function (state) {
                 innerCircle.classList.add('animate');
             }, ANIMATION_DELAY);
             break;
+
+        case 'internal-error':
+            console.log(`[STATE INTERNAL-ERROR] Entering 'internal-error' state.`);
+            kai.className = 'circle internal-error glitch-active';
+        
+            const glitchEffectInternal = setInterval(() => {
+                setRandomGlitchDirections();
+            }, glitchInterval);
+        
+            setTimeout(() => {
+                clearInterval(glitchEffectInternal);
+                kai.classList.remove('glitch-active');
+                kai.classList.add('internal-error');
+            }, glitchDuration);
+            break;   
     }
 };
 
