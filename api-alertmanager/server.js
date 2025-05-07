@@ -34,6 +34,10 @@ const updateAlertState = async () => {
     }
 };
 
+// Initial check
+console.log('[INIT] Performing initial Alertmanager alert check...');
+updateAlertState();
+
 // Periodically update the alert status
 setInterval(updateAlertState, POLL_INTERVAL); // Use the POLL_INTERVAL variable
 
