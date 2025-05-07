@@ -159,6 +159,24 @@ window.setState = function (state) {
                 innerCircle.classList.add('animate');
             }, ANIMATION_DELAY);
             break;
+            
+        case 'internal-error':
+            console.log(`[STATE INTERNAL-ERROR] Entering 'internal-error' state.`);
+            kai.className = 'circle internal-error glitch-active';
+        
+            const glitchDurationInternal = 2000;
+            const glitchIntervalInternal = 300;
+        
+            const glitchEffectInternal = setInterval(() => {
+                setRandomGlitchDirections();
+            }, glitchIntervalInternal);
+        
+            setTimeout(() => {
+                clearInterval(glitchEffectInternal);
+                kai.classList.remove('glitch-active');
+                kai.classList.add('internal-error'); // ensures the visual style persists
+            }, glitchDurationInternal);
+            break;
 
         case 'internal-error-working':
             kai.className = 'circle internal-error working';
