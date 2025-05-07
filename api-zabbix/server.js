@@ -39,10 +39,24 @@ const updateAlertState = async () => {
             id: 1
         });
 
-        const hasActiveAlerts = response.data.result.length > 0;
+        // Debug full response for visibility
+        console.log('[DEBUG] Zabbix response:', JSON.stringify(response.data, null, 2));
 
-        fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts, internalError: false }, null, 2));
-        console.log('[ALERT CHECK] Updated alert state:', { hasActiveAlerts });
+        // Check for API-level error
+        if (response.data.error) {
+            throw new Error(`Zabbix API error: ${response.data.error.message} — ${response.data.error.data}`);
+        }
+
+        // Validate that result is an array
+        if (Array.isArray(response.data.result)) {
+            const hasActiveAlerts = response.data.result.length > 0;
+
+            fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts, internalError: false }, null, 2));
+            console.log('[ALERT CHECK] Updated alert state:', { hasActiveAlerts });
+        } else {
+            throw new Error(`Unexpected Zabbix response structure: 'result' is not an array.`);
+        }
+
     } catch (error) {
         console.error('[ERROR] Failed to fetch problems from Zabbix:', error.message);
         fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
