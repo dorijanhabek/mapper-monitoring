@@ -15,9 +15,9 @@ services:
     networks:
       - kai-network
 
-  kai-api:
-    build: ./api
-    container_name: kai-api
+  kai-api-alertmanager:
+    build: ./api-alertmanager
+    container_name: kai-api-alertmanager
     ports:
       - "3000:3000"
     depends_on:
