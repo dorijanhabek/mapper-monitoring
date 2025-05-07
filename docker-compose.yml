@@ -15,13 +15,24 @@ services:
     networks:
       - kai-network
 
-  kai-api:
-    build: ./api
-    container_name: kai-api
+  kai-api-alertmanager:
+    build: ./api-alertmanager
+    container_name: kai-api-alertmanager
     ports:
       - "3000:3000"
     depends_on:
       - kai-alertmanager
+    volumes:
+      - ./kai:/app/kai
+    restart: unless-stopped
+    networks:
+      - kai-network
+
+  kai-api-zabbix:
+    build: ./api-zabbix
+    container_name: kai-api-zabbix
+    ports:
+      - "3333:3000"
     volumes:
       - ./kai:/app/kai
     restart: unless-stopped
