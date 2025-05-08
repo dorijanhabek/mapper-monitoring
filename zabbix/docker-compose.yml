@@ -3,16 +3,17 @@ services:
     container_name: tocka-interface
     environment:
      API_URL: http://tocka-api-zabbix:3000/health
+     POLL_INTERVAL: 10000
     build:
       context: ../
       dockerfile: config/Dockerfile
     ports:
       - "1234:80"
-    volumes:
-      - ../tocka:/usr/share/nginx/html
     restart: unless-stopped
     depends_on:
       - tocka-api-zabbix
+    volumes:
+      - ../tocka:/app/tocka
     networks:
       - tocka-network
 

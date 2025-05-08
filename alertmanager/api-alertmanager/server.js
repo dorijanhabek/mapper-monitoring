@@ -5,6 +5,12 @@ const path = require('path');
 const cors = require('cors');
 const app = express();
 
+// Fail fast if required env vars are missing
+if (!process.env.ALERTMANAGER_URL || !process.env.POLL_INTERVAL) {
+    console.error('[ENV ERROR] Missing ALERTMANAGER_URL or POLL_INTERVAL.');
+    process.exit(1);
+  }
+
 // Add health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).send('OK');
@@ -17,9 +23,6 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL; // How often to check for alert
 const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');
 
 app.use(cors());
-
-// Serve static files (index.html, alerts.json, etc.) from the tocka folder
-app.use(express.static(path.join(__dirname, 'tocka')));
 
 // Ensure alerts.json exists with a default false state
 fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: false }, null, 2));

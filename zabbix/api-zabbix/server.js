@@ -5,6 +5,12 @@ const path = require('path');
 const cors = require('cors');
 const app = express();
 
+//Fail fast if required env vars are missing
+if (!process.env.ZABBIX_URL || !process.env.ZABBIX_TOKEN || !process.env.POLL_INTERVAL) {
+    console.error('[ENV ERROR] Missing ZABBIX_URL, ZABBIX_TOKEN or POLL_INTERVAL.');
+    process.exit(1);
+  } 
+
 // Add health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).send('OK');
@@ -21,7 +27,6 @@ const ZABBIX_URL = process.env.ZABBIX_URL;
 const ZABBIX_TOKEN = process.env.ZABBIX_TOKEN; // Replace with your real API token
 
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'tocka')));
 
 // Ensure alerts.json exists with a default false state
 fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: false }, null, 2));
