@@ -10,7 +10,7 @@ services:
     ports:
       - "1234:80"
     volumes:
-      - ../tocka:/usr/share/nginx/html
+      - ../tocka:/app
     restart: unless-stopped
     depends_on:
       - tocka-api-zabbix
