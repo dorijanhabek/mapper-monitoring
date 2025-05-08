@@ -13,6 +13,8 @@ services:
     depends_on:
       - tocka-prometheus
       - tocka-alertmanager
+    volumes:
+      - ../tocka:/app
     networks:
       - tocka-network
 
