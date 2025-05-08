@@ -2,12 +2,12 @@ services:
   tocka-interface:
     container_name: tocka-interface
     build:
-      context: .
+      context: ../
       dockerfile: Dockerfile
     ports:
       - "1234:80"
     volumes:
-      - ./tocka:/usr/share/nginx/html
+      - ../tocka:/usr/share/nginx/html
     restart: unless-stopped
     depends_on:
       - tocka-api-zabbix
@@ -20,7 +20,7 @@ services:
     ports:
       - "3333:3000"
     volumes:
-      - ./tocka:/app/tocka
+      - ../tocka:/app/tocka
     restart: unless-stopped
     networks:
       - tocka-network
