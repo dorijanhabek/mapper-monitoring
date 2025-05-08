@@ -2,7 +2,7 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY server.js .
+COPY * .
 
 RUN npm init -y && \
     npm install express axios cors dotenv && \
