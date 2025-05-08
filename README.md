@@ -1,9 +1,8 @@
-Zabbix Api Setup:
+# Zabbix Api Setup:
 
-![screencapture-cratis-ubuntu-lab-7080-zabbix-php-2025-05-08-23_26_31](https://github.com/user-attachments/assets/68f820d0-2db2-4b72-8ac1-d8cd3eb47f65)
+![2025-05-08 23_39_58-Zabbix docker_ Configuration of user groups and 1 more page - Personal - Microso](https://github.com/user-attachments/assets/76ec0c26-fb2f-44da-ba4b-f391565113bd)
 
-![screencapture-cratis-ubuntu-lab-7080-zabbix-php-2025-05-08-23_26_45](https://github.com/user-attachments/assets/d17bc9f7-7149-458f-89e3-a71397bb161f)
+![2025-05-08 23_41_43-Zabbix docker_ Configuration of user groups and 3 more pages - Personal - Micros](https://github.com/user-attachments/assets/5b9e21c0-7864-40fa-88b1-bf684045606f)
 
-![screencapture-cratis-ubuntu-lab-7080-zabbix-php-2025-05-08-23_26_54](https://github.com/user-attachments/assets/c696afdc-5577-4713-8357-90a0d31bd3b7)
+![2025-05-08 23_42_14-Zabbix docker_ Configuration of users and 3 more pages - Personal - Microsoft​ E](https://github.com/user-attachments/assets/0c530c96-1f2e-460c-8836-345a1a5381a0)
 
-![screencapture-cratis-ubuntu-lab-7080-zabbix-php-2025-05-08-23_27_13](https://github.com/user-attachments/assets/7a8d64b7-bb4e-4138-b626-07b3f69c41b1)
