@@ -3,7 +3,7 @@ FROM node:alpine
 WORKDIR /app
 
 # Copy the static files
-COPY frontend-server.js .
+COPY config/frontend-server.js .
 
 RUN npm init -y && \
     npm install express axios cors && \
