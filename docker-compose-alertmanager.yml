@@ -1,36 +1,36 @@
 services:
-  kai-interface:
-    container_name: kai-interface
+  tocka-interface:
+    container_name: tocka-interface
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "1234:80"
     volumes:
-      - ./kai:/usr/share/nginx/html
+      - ./tocka:/usr/share/nginx/html
     restart: unless-stopped
     depends_on:
-      - kai-prometheus
-      - kai-alertmanager
+      - tocka-prometheus
+      - tocka-alertmanager
     networks:
-      - kai-network
+      - tocka-network
 
-  kai-api-alertmanager:
+  tocka-api-alertmanager:
     build: ./api-alertmanager
-    container_name: kai-api-alertmanager
+    container_name: tocka-api-alertmanager
     ports:
       - "3000:3000"
     depends_on:
-      - kai-alertmanager
+      - tocka-alertmanager
     volumes:
-      - ./kai:/app/kai
+      - ./tocka:/app/tocka
     restart: unless-stopped
     networks:
-      - kai-network
+      - tocka-network
 
-  kai-prometheus:
+  tocka-prometheus:
     image: prom/prometheus:latest
-    container_name: kai-prometheus
+    container_name: tocka-prometheus
     ports:
       - 9090:9090
     volumes:
@@ -41,11 +41,11 @@ services:
       - --storage.tsdb.path=/prometheus
     restart: unless-stopped
     networks:
-      - kai-network
+      - tocka-network
 
-  kai-alertmanager:
+  tocka-alertmanager:
     image: prom/alertmanager:latest
-    container_name: kai-alertmanager
+    container_name: tocka-alertmanager
     ports:
       - 9093:9093
     volumes:
@@ -54,11 +54,11 @@ services:
     command: --config.file=/etc/alertmanager/alertmanager.yml --log.level=debug
     restart: unless-stopped
     networks:
-      - kai-network
+      - tocka-network
 
-  kai-node-exporter:
+  tocka-node-exporter:
     image: quay.io/prometheus/node-exporter:latest
-    container_name: kai-node-exporter
+    container_name: tocka-node-exporter
     command:
       - --path.rootfs=/host
       - --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|run|boot|var/lib/docker/overlay2)($|/)
@@ -68,7 +68,7 @@ services:
       - /:/host
     restart: unless-stopped
     networks:
-      - kai-network
+      - tocka-network
 
 volumes:
   prometheus-data:
@@ -77,5 +77,5 @@ volumes:
     driver: local
 
 networks:
-  kai-network:
+  tocka-network:
     driver: bridge

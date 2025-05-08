@@ -1,5 +1,5 @@
 groups:
-  - name: KaiAlerts
+  - name: TockaAlerts
     rules:
       - alert: PrometheusTargetMissing
         expr: up == 0

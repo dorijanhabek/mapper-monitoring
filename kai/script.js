@@ -14,18 +14,18 @@ let internalErrorCount = 0; // Tracks internal-error intervals
 let currentState = 'normal'; // Tracks the current state
 
 function setRandomGlitchDirections() {
-    const kai = document.getElementById('kai');
+    const tocka = document.getElementById('tocka');
     const glitchIntensity = Math.random() * 300; // Randomize intensity dynamically (0 to 300px)
 
     // Randomize directions for each axis
-    kai.style.setProperty('--x1', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    kai.style.setProperty('--y1', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    kai.style.setProperty('--x2', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    kai.style.setProperty('--y2', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    kai.style.setProperty('--x3', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    kai.style.setProperty('--y3', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    kai.style.setProperty('--x4', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    kai.style.setProperty('--y4', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    tocka.style.setProperty('--x1', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    tocka.style.setProperty('--y1', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    tocka.style.setProperty('--x2', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    tocka.style.setProperty('--y2', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    tocka.style.setProperty('--x3', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    tocka.style.setProperty('--y3', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    tocka.style.setProperty('--x4', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    tocka.style.setProperty('--y4', `${(Math.random() - 0.5) * glitchIntensity}px`);
 }
 
 async function checkAlerts() {
@@ -107,8 +107,8 @@ async function checkAlerts() {
 }
 
 window.setState = function (state) {
-    const kai = document.getElementById('kai');
-    const innerCircle = kai.querySelector('.inner-circle');
+    const tocka = document.getElementById('tocka');
+    const innerCircle = tocka.querySelector('.inner-circle');
 
     // Clear any pending timeouts
     clearTimeout(stateTimeout);
@@ -119,7 +119,7 @@ window.setState = function (state) {
 
     switch (state) {
         case 'normal':
-            kai.className = 'circle normal';
+            tocka.className = 'circle normal';
             console.log(`[STATE NORMAL] Entering 'normal' state.`);
             normalCount = 0; // Reset normal state counter
             stateTimeout = setTimeout(() => {
@@ -129,7 +129,7 @@ window.setState = function (state) {
             break;
 
         case 'working':
-            kai.className = 'circle normal working';
+            tocka.className = 'circle normal working';
             console.log(`[STATE WORKING] Entering 'working' state.`);
             pulseTimeout = setTimeout(() => {
                 innerCircle.classList.add('animate');
@@ -138,7 +138,7 @@ window.setState = function (state) {
 
         case 'error':
             console.log(`[STATE ERROR] Entering 'error' state.`);
-            kai.className = 'circle error glitch-active';
+            tocka.className = 'circle error glitch-active';
 
             const glitchDuration = 2000; // Total glitch duration in ms
             const glitchInterval = 300; // Time between each glitch step in ms
@@ -149,13 +149,13 @@ window.setState = function (state) {
 
             setTimeout(() => {
                 clearInterval(glitchEffect); // Stop the glitch effect
-                kai.classList.remove('glitch-active');
-                kai.classList.add('error'); // Set to the final error state
+                tocka.classList.remove('glitch-active');
+                tocka.classList.add('error'); // Set to the final error state
             }, glitchDuration);
             break;
 
         case 'error-working':
-            kai.className = 'circle error working';
+            tocka.className = 'circle error working';
             console.log(`[STATE ERROR-WORKING] Entering 'error-working' state.`);
             pulseTimeout = setTimeout(() => {
                 innerCircle.classList.add('animate');
@@ -164,7 +164,7 @@ window.setState = function (state) {
 
         case 'internal-error':
             console.log(`[STATE INTERNAL-ERROR] Entering 'internal-error' state.`);
-            kai.className = 'circle internal-error glitch-active';
+            tocka.className = 'circle internal-error glitch-active';
 
             const glitchDurationInternal = 2000;
             const glitchIntervalInternal = 300;
@@ -175,13 +175,13 @@ window.setState = function (state) {
 
             setTimeout(() => {
                 clearInterval(glitchEffectInternal);
-                kai.classList.remove('glitch-active');
-                kai.classList.add('internal-error'); // ensures the visual style persists
+                tocka.classList.remove('glitch-active');
+                tocka.classList.add('internal-error'); // ensures the visual style persists
             }, glitchDurationInternal);
             break;
 
         case 'internal-error-working':
-            kai.className = 'circle internal-error working';
+            tocka.className = 'circle internal-error working';
             console.log(`[STATE INTERNAL-ERROR-WORKING] Entering 'internal-error-working' state.`);
             pulseTimeout = setTimeout(() => {
                 innerCircle.classList.add('animate');

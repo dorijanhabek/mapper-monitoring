@@ -8,13 +8,13 @@ const app = express();
 // Configurable time variables (in milliseconds)
 const POLL_INTERVAL = 10000; // How often to check for alerts
 
-// Path to alerts.json in the kai folder
-const ALERT_FILE = path.join(__dirname, 'kai', 'alerts.json');
+// Path to alerts.json in the tocka folder
+const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');
 
 app.use(cors());
 
-// Serve static files (index.html, alerts.json, etc.) from the kai folder
-app.use(express.static(path.join(__dirname, 'kai')));
+// Serve static files (index.html, alerts.json, etc.) from the tocka folder
+app.use(express.static(path.join(__dirname, 'tocka')));
 
 // Ensure alerts.json exists with a default false state
 fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: false }, null, 2));
@@ -23,7 +23,7 @@ console.log('[INIT] Reset alerts.json to default false state.');
 // Function to check alerts and update the state in alerts.json
 const updateAlertState = async () => {
     try {
-        const response = await axios.get('http://kai-alertmanager:9093/api/v2/alerts');
+        const response = await axios.get('http://tocka-alertmanager:9093/api/v2/alerts');
         const hasActiveAlerts = response.data.length > 0;
 
         fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts, internalError: false }, null, 2));

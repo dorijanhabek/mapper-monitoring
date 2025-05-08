@@ -1,30 +1,30 @@
 services:
-  kai-interface:
-    container_name: kai-interface
+  tocka-interface:
+    container_name: tocka-interface
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "1234:80"
     volumes:
-      - ./kai:/usr/share/nginx/html
+      - ./tocka:/usr/share/nginx/html
     restart: unless-stopped
     depends_on:
-      - kai-api-zabbix
+      - tocka-api-zabbix
     networks:
-      - kai-network
+      - tocka-network
 
-  kai-api-zabbix:
+  tocka-api-zabbix:
     build: ./api-zabbix
-    container_name: kai-api-zabbix
+    container_name: tocka-api-zabbix
     ports:
       - "3333:3000"
     volumes:
-      - ./kai:/app/kai
+      - ./tocka:/app/tocka
     restart: unless-stopped
     networks:
-      - kai-network
+      - tocka-network
 
 networks:
-  kai-network:
+  tocka-network:
     driver: bridge

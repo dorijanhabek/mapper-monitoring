@@ -6,9 +6,9 @@ COPY server.js .
 
 RUN npm init -y && \
     npm install express axios cors && \
-    sed -i 's/"keywords": \[\]/"keywords": ["KAI"]/' package.json && \
+    sed -i 's/"keywords": \[\]/"keywords": ["TOCKA"]/' package.json && \
     sed -i 's/"author": ""/"author": "Dino Pizek"/' package.json && \
-    sed -i 's/"name": ".*"/"name": "KAI Monitoring"/' package.json
+    sed -i 's/"name": ".*"/"name": "TOCKA Monitoring"/' package.json
 
 EXPOSE 3000
 
