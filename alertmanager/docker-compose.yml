@@ -14,7 +14,7 @@ services:
       - tocka-prometheus
       - tocka-alertmanager
     volumes:
-      - ../tocka:/app
+      - ../tocka:/app/tocka
     networks:
       - tocka-network
 

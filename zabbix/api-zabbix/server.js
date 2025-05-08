@@ -27,7 +27,6 @@ const ZABBIX_URL = process.env.ZABBIX_URL;
 const ZABBIX_TOKEN = process.env.ZABBIX_TOKEN; // Replace with your real API token
 
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'tocka')));
 
 // Ensure alerts.json exists with a default false state
 fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: false }, null, 2));

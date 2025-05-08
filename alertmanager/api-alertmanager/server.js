@@ -24,9 +24,6 @@ const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');
 
 app.use(cors());
 
-// Serve static files (index.html, alerts.json, etc.) from the tocka folder
-app.use(express.static(path.join(__dirname, 'tocka')));
-
 // Ensure alerts.json exists with a default false state
 fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: false }, null, 2));
 console.log('[INIT] Reset alerts.json to default false state.');

@@ -13,7 +13,7 @@ services:
     depends_on:
       - tocka-api-zabbix
     volumes:
-      - ../tocka:/app/
+      - ../tocka:/app/tocka
     networks:
       - tocka-network
 
