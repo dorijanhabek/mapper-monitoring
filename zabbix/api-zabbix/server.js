@@ -27,6 +27,8 @@ console.log('[INIT] Reset alerts.json to default false state.');
 const updateAlertState = async () => {
     console.log('[CHECK ALERTS] Checking Zabbix for active problems...');
 
+    console.log('[DEBUG] ZABBIX_URL:', ZABBIX_URL);
+
     try {
         const response = await axios.post(
             ZABBIX_URL,
