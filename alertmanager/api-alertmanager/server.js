@@ -4,9 +4,10 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const app = express();
+require('dotenv').config();
 
 // Configurable time variables (in milliseconds)
-const POLL_INTERVAL = 10000; // How often to check for alerts
+const POLL_INTERVAL = process.env.POLL_INTERVAL; // How often to check for alerts
 
 // Path to alerts.json in the tocka folder
 const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');
@@ -23,7 +24,7 @@ console.log('[INIT] Reset alerts.json to default false state.');
 // Function to check alerts and update the state in alerts.json
 const updateAlertState = async () => {
     try {
-        const response = await axios.get('http://tocka-alertmanager:9093/api/v2/alerts');
+        const response = await axios.get(process.env.ALERTMANAGER_URL);
         const hasActiveAlerts = response.data.length > 0;
 
         fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts, internalError: false }, null, 2));

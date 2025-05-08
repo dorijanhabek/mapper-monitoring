@@ -4,16 +4,17 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const app = express();
+require('dotenv').config();
 
 // Configurable time variables (in milliseconds)
-const POLL_INTERVAL = 10000; // How often to check for alerts
+const POLL_INTERVAL = process.env.POLL_INTERVAL; // How often to check for alerts
 
 // Path to alerts.json in the tocka folder
 const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');
 
 // Zabbix connection
-const ZABBIX_URL = 'http://cratis-ubuntu-lab:7080/api_jsonrpc.php';
-const ZABBIX_TOKEN = 'a97192dca8e5ca252eeefd0f43a853ab36b94d99d812b0c09533e25c340c099b'; // Replace with your real API token
+const ZABBIX_URL = process.env.ZABBIX_URL;
+const ZABBIX_TOKEN = process.env.ZABBIX_TOKEN; // Replace with your real API token
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'tocka')));
