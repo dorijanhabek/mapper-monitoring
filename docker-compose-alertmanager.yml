@@ -28,17 +28,6 @@ services:
     networks:
       - kai-network
 
-  kai-api-zabbix:
-    build: ./api-zabbix
-    container_name: kai-api-zabbix
-    ports:
-      - "3333:3000"
-    volumes:
-      - ./kai:/app/kai
-    restart: unless-stopped
-    networks:
-      - kai-network
-
   kai-prometheus:
     image: prom/prometheus:latest
     container_name: kai-prometheus

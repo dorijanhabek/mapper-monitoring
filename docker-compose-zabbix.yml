@@ -1,0 +1,30 @@
+services:
+  kai-interface:
+    container_name: kai-interface
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "1234:80"
+    volumes:
+      - ./kai:/usr/share/nginx/html
+    restart: unless-stopped
+    depends_on:
+      - kai-api-zabbix
+    networks:
+      - kai-network
+
+  kai-api-zabbix:
+    build: ./api-zabbix
+    container_name: kai-api-zabbix
+    ports:
+      - "3333:3000"
+    volumes:
+      - ./kai:/app/kai
+    restart: unless-stopped
+    networks:
+      - kai-network
+
+networks:
+  kai-network:
+    driver: bridge
