@@ -3,7 +3,7 @@ FROM node:alpine
 WORKDIR /app
 
 # Copy the static files
-COPY ../tocka .
+COPY ../tocka ./tocka
 
 RUN npm init -y && \
     npm install express axios cors && \
