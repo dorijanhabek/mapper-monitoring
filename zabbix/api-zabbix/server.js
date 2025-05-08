@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const app = express();
+const fetchZabbixProblems = require('./zabbixRequest');
 
 //Fail fast if required env vars are missing
 if (!process.env.ZABBIX_URL || !process.env.ZABBIX_TOKEN || !process.env.POLL_INTERVAL) {
@@ -39,25 +40,11 @@ const updateAlertState = async () => {
     console.log('[DEBUG] ZABBIX_URL:', ZABBIX_URL);
 
     try {
-        const response = await axios.post(
-            ZABBIX_URL,
-            {
-                jsonrpc: '2.0',
-                method: 'problem.get',
-                params: {
-                    severities: [4, 5], // High + Disaster
-                    sortfield: 'eventid',
-                    sortorder: 'DESC'
-                },
-                id: 1
-            },
-            {
-                headers: {
-                    'Content-Type': 'application/json-rpc',
-                    'Authorization': `Bearer ${ZABBIX_TOKEN}`
-                }
-            }
-        );
+        const response = await fetchZabbixProblems({
+          url: process.env.ZABBIX_URL,
+          token: process.env.ZABBIX_TOKEN,
+          mode: process.env.ZABBIX_MODE.toLowerCase()
+        });
 
         console.log('[DEBUG] Zabbix response:', JSON.stringify(response.data, null, 2));
 
