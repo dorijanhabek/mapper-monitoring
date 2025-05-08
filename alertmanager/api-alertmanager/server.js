@@ -5,6 +5,12 @@ const path = require('path');
 const cors = require('cors');
 const app = express();
 
+// Fail fast if required env vars are missing
+if (!process.env.ALERTMANAGER_URL || !process.env.POLL_INTERVAL) {
+    console.error('[ENV ERROR] Missing ALERTMANAGER_URL or POLL_INTERVAL.');
+    process.exit(1);
+  }
+
 // Add health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).send('OK');

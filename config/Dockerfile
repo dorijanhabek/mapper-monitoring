@@ -1,7 +1,16 @@
-FROM nginx:alpine
+FROM node:alpine
+
+WORKDIR /app
 
 # Copy the static files
-COPY ../tocka /usr/share/nginx/html/
+COPY ../tocka .
 
-# Configure nginx
-COPY config/proxy/nginx.conf /etc/nginx/conf.d/default.conf
+RUN npm init -y && \
+    npm install express axios cors && \
+    sed -i 's/"keywords": \[\]/"keywords": ["TOCKA"]/' package.json && \
+    sed -i 's/"author": ""/"author": "Dino Pizek"/' package.json && \
+    sed -i 's/"name": ".*"/"name": "TOCKA Monitoring"/' package.json
+
+EXPOSE 80
+
+CMD ["node", "frontend-server.js"]

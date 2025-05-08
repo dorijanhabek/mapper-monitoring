@@ -5,6 +5,12 @@ const path = require('path');
 const cors = require('cors');
 const app = express();
 
+//Fail fast if required env vars are missing
+if (!process.env.ZABBIX_URL || !process.env.ZABBIX_TOKEN || !process.env.POLL_INTERVAL) {
+    console.error('[ENV ERROR] Missing ZABBIX_URL, ZABBIX_TOKEN or POLL_INTERVAL.');
+    process.exit(1);
+  } 
+
 // Add health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).send('OK');
