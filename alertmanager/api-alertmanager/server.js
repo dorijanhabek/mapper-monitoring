@@ -6,6 +6,11 @@ const cors = require('cors');
 const app = express();
 require('dotenv').config();
 
+// Add health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+  });
+
 // Configurable time variables (in milliseconds)
 const POLL_INTERVAL = process.env.POLL_INTERVAL; // How often to check for alerts
 
