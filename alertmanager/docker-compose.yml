@@ -1,6 +1,8 @@
 services:
   tocka-interface:
     container_name: tocka-interface
+    environment:
+     API_URL: http://tocka-api-alertmanager:3000/health
     build:
       context: ../
       dockerfile: config/Dockerfile
@@ -18,6 +20,9 @@ services:
   tocka-api-alertmanager:
     build: ./api-alertmanager
     container_name: tocka-api-alertmanager
+    environment:
+      POLL_INTERVAL: 10000
+      ALERTMANAGER_URL: http://tocka-alertmanager:9093/api/v2/alerts
     ports:
       - "3000:3000"
     depends_on:
