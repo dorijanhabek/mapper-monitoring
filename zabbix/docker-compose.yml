@@ -2,7 +2,7 @@ services:
   tocka-interface:
     container_name: tocka-interface
     build:
-      context: ../
+      context: ../config/
       dockerfile: Dockerfile
     ports:
       - "1234:80"
