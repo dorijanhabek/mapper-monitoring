@@ -2,15 +2,15 @@ FROM node:alpine
 
 WORKDIR /app
 
+# Copy everything
+COPY . .
+
 # Install dependencies inside /app
 RUN npm init -y && \
     npm install express axios cors && \
     sed -i 's/"keywords": \[\]/"keywords": ["TOCKA"]/' package.json && \
     sed -i 's/"author": ""/"author": "Dino Pizek"/' package.json && \
     sed -i 's/"name": ".*"/"name": "TOCKA Monitoring"/' package.json
-
-# Copy everything from tocka directory
-COPY ../tocka ./
 
 EXPOSE 80
 

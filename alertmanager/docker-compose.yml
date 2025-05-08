@@ -6,7 +6,7 @@ services:
      POLL_INTERVAL: 10000
     build:
       context: ../
-      dockerfile: config/Dockerfile
+      dockerfile: tocka/Dockerfile
     ports:
       - "1234:80"
     volumes:
