@@ -6,11 +6,11 @@ services:
      POLL_INTERVAL: 10000
     build:
       context: ../
-      dockerfile: tocka/Dockerfile
+      dockerfile: config/Dockerfile
     ports:
       - "1234:80"
-    #volumes:
-    #  - ../tocka:/app/tocka
+    volumes:
+      - ../tocka:/usr/share/nginx/html
     restart: unless-stopped
     depends_on:
       - tocka-prometheus

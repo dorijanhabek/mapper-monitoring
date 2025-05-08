@@ -2,9 +2,9 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY . .
+# Copy the static files
+COPY ../tocka .
 
-# Install dependencies inside /app
 RUN npm init -y && \
     npm install express axios cors && \
     sed -i 's/"keywords": \[\]/"keywords": ["TOCKA"]/' package.json && \
