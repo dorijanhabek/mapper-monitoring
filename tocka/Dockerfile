@@ -2,6 +2,8 @@ FROM node:alpine
 
 WORKDIR /app
 
+COPY . .
+
 # Install dependencies inside /app
 RUN npm init -y && \
     npm install express axios cors && \

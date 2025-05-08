@@ -9,8 +9,8 @@ services:
       dockerfile: tocka/Dockerfile
     ports:
       - "1234:80"
-    volumes:
-      - ../tocka:/app/tocka
+    #volumes:
+    #  - ../tocka:/app/tocka
     restart: unless-stopped
     depends_on:
       - tocka-prometheus
