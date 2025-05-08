@@ -2,12 +2,12 @@ services:
   tocka-interface:
     container_name: tocka-interface
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: config/Dockerfile
     ports:
       - "1234:80"
     volumes:
-      - ./tocka:/usr/share/nginx/html
+      - ../tocka:/usr/share/nginx/html
     restart: unless-stopped
     depends_on:
       - tocka-prometheus
@@ -23,7 +23,7 @@ services:
     depends_on:
       - tocka-alertmanager
     volumes:
-      - ./tocka:/app/tocka
+      - ../tocka:/app/tocka
     restart: unless-stopped
     networks:
       - tocka-network
@@ -34,7 +34,7 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./config/prometheus:/etc/prometheus
+      - ../config/prometheus:/etc/prometheus
       - prometheus-data:/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -49,7 +49,7 @@ services:
     ports:
       - 9093:9093
     volumes:
-      - ./config/alertmanager:/config
+      - ../config/alertmanager:/config
       - alertmanager-data:/data
     command: --config.file=/etc/alertmanager/alertmanager.yml --log.level=debug
     restart: unless-stopped
