@@ -51,6 +51,7 @@ const updateAlertState = async () => {
         console.log('[DEBUG] Zabbix response:', JSON.stringify(response.data, null, 2));
 
         if (response.data.error) {
+            fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
             throw new Error(`Zabbix API error: ${response.data.error.message} — ${response.data.error.data}`);
         }
 
@@ -60,6 +61,7 @@ const updateAlertState = async () => {
             fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts, internalError: false }, null, 2));
             console.log('[ALERT CHECK] Updated alert state:', { hasActiveAlerts });
         } else {
+            fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
             throw new Error(`Unexpected Zabbix response structure: 'result' is not an array.`);
         }
 
