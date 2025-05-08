@@ -2,7 +2,7 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY ../tocka/frontend-server.js ./
+COPY . .
 
 RUN npm init -y && \
     npm install express axios cors && \
@@ -10,8 +10,6 @@ RUN npm init -y && \
     sed -i 's/"author": ""/"author": "Dino Pizek"/' package.json && \
     sed -i 's/"name": ".*"/"name": "TOCKA Monitoring"/' package.json
 
-COPY ../tocka ./
+EXPOSE 3000
 
-EXPOSE 80
-
-CMD ["node", "frontend-server.js"]
+CMD ["node", "server.js"]
