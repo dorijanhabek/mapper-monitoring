@@ -15,7 +15,7 @@ let currentState = 'normal'; // Tracks the current state
 
 function setRandomGlitchDirections() {
     const tocka = document.getElementById('tocka');
-    const glitchIntensity = Math.random() * 300; // Randomize intensity dynamically (0 to 300px)
+    const glitchIntensity = Math.random() * 500; // Randomize intensity dynamically (0 to 500px)
 
     // Randomize directions for each axis
     tocka.style.setProperty('--x1', `${(Math.random() - 0.5) * glitchIntensity}px`);
@@ -28,7 +28,10 @@ function setRandomGlitchDirections() {
     tocka.style.setProperty('--y4', `${(Math.random() - 0.5) * glitchIntensity}px`);
 }
 
-function triggerGlitchEffect(duration = 2000, interval = 300) {
+function triggerGlitchEffect(
+    duration = Math.floor(1000 + Math.random() * 3000), // 1s–4s randomly
+    interval = Math.floor(200 + Math.random() * 400)     // 200ms–500ms randomly
+    ) {
     const tocka = document.getElementById('tocka');
     const innerCircle = tocka.querySelector('.inner-circle');
 
