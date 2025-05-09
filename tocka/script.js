@@ -28,6 +28,20 @@ function setRandomGlitchDirections() {
     tocka.style.setProperty('--y4', `${(Math.random() - 0.5) * glitchIntensity}px`);
 }
 
+function triggerGlitchEffect(duration = 2000, interval = 300) {
+    const tocka = document.getElementById('tocka');
+    tocka.classList.add('glitch-active');
+
+    const glitchEffect = setInterval(() => {
+        setRandomGlitchDirections();
+    }, interval);
+
+    setTimeout(() => {
+        clearInterval(glitchEffect);
+        tocka.classList.remove('glitch-active');
+    }, duration);
+}
+
 async function checkAlerts() {
     console.log(`[CHECK ALERTS] Checking for alerts...`);
     try {
@@ -43,6 +57,7 @@ async function checkAlerts() {
 
             if (currentState === 'internal-error') {
                 internalErrorCount++;
+                triggerGlitchEffect();
                 console.log(
                     `[INTERNAL ERROR STATE] Staying in 'internal-error'. ${ERROR_DURATION - internalErrorCount} intervals before transitioning to 'internal-error-working'.`
                 );
@@ -52,6 +67,7 @@ async function checkAlerts() {
                 }
             } else if (currentState === 'internal-error-working') {
                 console.log(`[INTERNAL-ERROR-WORKING STATE] Errors still present. Staying in 'internal-error-working' state.`);
+                triggerGlitchEffect();
             } else {
                 console.log(`[STATE TRANSITION] Changing state to 'internal-error'.`);
                 internalErrorCount = 0;
@@ -67,6 +83,7 @@ async function checkAlerts() {
             console.log(`[ALERT FOUND] Active alerts detected.`);
             if (currentState === 'error') {
                 errorCount++;
+                triggerGlitchEffect();
                 console.log(
                     `[ERROR STATE] Staying in 'error' state. ${ERROR_DURATION - errorCount} intervals before transitioning to 'error-working'.`
                 );
@@ -76,6 +93,7 @@ async function checkAlerts() {
                 }
             } else if (currentState === 'error-working') {
                 console.log(`[ERROR-WORKING STATE] Alerts still present. Staying in 'error-working' state.`);
+                triggerGlitchEffect();
             } else {
                 console.log(`[STATE TRANSITION] Changing state to 'error'.`);
                 errorCount = 0; // Reset error counter
