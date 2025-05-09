@@ -36,7 +36,7 @@ function setRandomGlitchDirections() {
 
 function triggerGlitchEffect(
     duration = 2000,
-    interval = Math.floor(200 + Math.random() * 400)     // 200ms–500ms randomly
+    interval = Math.floor(200 + Math.random() * 400) // 200ms–500ms randomly
     ) {
     const tocka = document.getElementById('tocka');
     const innerCircle = tocka.querySelector('.inner-circle');
