@@ -6,13 +6,19 @@ async function fetchZabbixProblems({ url, token, mode }) {
     'Content-Type': 'application/json-rpc'
   };
 
+  const now = Math.floor(Date.now() / 1000);
+  const lookback = parseInt(process.env.ZABBIX_LOOKBACK_SECONDS, 10);
+  const sevenDaysAgo = now - lookback;
+
   const data = {
     jsonrpc: '2.0',
     method: 'problem.get',
     params: {
       severities: [4, 5], // High + Disaster
       sortfield: 'eventid',
-      sortorder: 'DESC'
+      sortorder: 'DESC',
+      acknowledged: 'false',
+      time_from: sevenDaysAgo
     },
     id: 1
   };
