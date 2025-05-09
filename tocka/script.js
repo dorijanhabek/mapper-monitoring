@@ -30,6 +30,12 @@ function setRandomGlitchDirections() {
 
 function triggerGlitchEffect(duration = 2000, interval = 300) {
     const tocka = document.getElementById('tocka');
+    const innerCircle = tocka.querySelector('.inner-circle');
+
+    // Remove pulse animation if present
+    innerCircle.classList.remove('animate');
+
+    // Activate glitch effect
     tocka.classList.add('glitch-active');
 
     const glitchEffect = setInterval(() => {
@@ -39,6 +45,11 @@ function triggerGlitchEffect(duration = 2000, interval = 300) {
     setTimeout(() => {
         clearInterval(glitchEffect);
         tocka.classList.remove('glitch-active');
+
+        // Reapply pulse animation if we’re still in a working state
+        if (tocka.classList.contains('working')) {
+            innerCircle.classList.add('animate');
+        }
     }, duration);
 }
 
