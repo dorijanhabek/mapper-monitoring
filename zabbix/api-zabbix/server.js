@@ -14,7 +14,7 @@ if (!process.env.ZABBIX_URL || !process.env.ZABBIX_TOKEN || !process.env.POLL_IN
 
 // Add health check endpoint
 app.get('/health', (req, res) => {
-    res.status(200).send('OK');
+    res.status(200).send('API SERVER healthy');
   });
 
 // Configurable time variables (in milliseconds)
@@ -37,8 +37,6 @@ console.log('[INIT] Reset alerts.json to default false state.');
 const updateAlertState = async () => {
     console.log('[CHECK ALERTS] Checking Zabbix for active problems...');
 
-    console.log('[DEBUG] ZABBIX_URL:', ZABBIX_URL);
-
     try {
         const response = await fetchZabbixProblems({
           url: process.env.ZABBIX_URL,
@@ -46,7 +44,7 @@ const updateAlertState = async () => {
           mode: process.env.ZABBIX_MODE.toLowerCase()
         });
 
-        console.log('[DEBUG] Zabbix response:', JSON.stringify(response.data, null, 2));
+        console.log('[SOURCE] Zabbix response:', JSON.stringify(response.data, null, 2));
 
         if (response.data.error) {
             fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
@@ -64,7 +62,7 @@ const updateAlertState = async () => {
         }
 
     } catch (error) {
-        console.error('[ERROR] Failed to fetch problems from Zabbix:', error.message);
+        console.error('[SOURCE ERROR] Failed to fetch problems from Zabbix:', error.message);
         fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
     }
 };
@@ -77,5 +75,7 @@ updateAlertState();
 setInterval(updateAlertState, POLL_INTERVAL);
 
 app.listen(3000, () => {
-    console.log(`[SERVER] API server running on port 3000. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
+    console.log(`[API SERVER] Running on port 3000. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
 });
+
+console.log('[API SERVER] ZABBIX_URL:', ZABBIX_URL);

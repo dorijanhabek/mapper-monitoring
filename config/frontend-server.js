@@ -25,17 +25,17 @@ app.get('/alerts', (req, res) => {
 
 // Health route for container monitoring
 app.get('/health', (req, res) => {
-  res.status(200).send('Frontend healthy');
+  res.status(200).send('FRONTEND SERVER healthy');
 });
 
 // Write internalError to alerts.json if API dies
 const checkBackendHealth = async () => {
   try {
     const res = await axios.get(API_HEALTH_URL, { timeout: 3000 });
-    if (res.status !== 200) throw new Error(`API unhealthy: ${res.status}`);
-    console.log('[FRONTEND] Backend API is healthy.');
+    if (res.status !== 200) throw new Error(`API SERVER unhealthy: ${res.status}`);
+    console.log('[API CHECK] API SERVER is healthy.');
   } catch (error) {
-    console.warn('[FRONTEND] Backend API unreachable, writing internalError to alerts.json');
+    console.warn('[API ERROR] API SERVER unreachable:', { internalError });
     fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
   }
 };
@@ -45,5 +45,5 @@ setInterval(checkBackendHealth, POLL_INTERVAL);
 checkBackendHealth();
 
 app.listen(PORT, () => {
-  console.log(`[FRONTEND] Node frontend running on port ${PORT}`);
+  console.log(`[FRONTEND SERVER] Running on port ${PORT}. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
 });

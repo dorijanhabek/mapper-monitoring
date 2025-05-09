@@ -74,13 +74,14 @@ async function checkAlerts() {
     try {
         const response = await fetch('./alerts.json'); // Fetch alerts.json file in the same folder
         if (!response.ok) {
+            fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
 
         if (data.internalError) {
-            console.log(`[INTERNAL ERROR] API reported an internal error.`);
+            console.log(`[INTERNAL ERROR] Internal error reported.`);
 
             if (currentState === 'internal-error') {
                 internalErrorCount++;
@@ -105,7 +106,7 @@ async function checkAlerts() {
 
             return;
         } else {
-            console.log(`[NO INTERNAL ERRORS] API reachable, no internal issues.`);
+            console.log(`[NO INTERNAL ERRORS] No internal issues.`);
         }
 
         if (data.hasActiveAlerts) {
@@ -170,37 +171,37 @@ window.setState = function (state) {
     switch (state) {
         case 'normal':
             tocka.className = 'circle normal';
-            console.log(`[STATE NORMAL] Entering 'normal' state.`);
+            console.log(`[NORMAL STATE] Entering 'normal' state.`);
             normalCount = 0; // Reset normal state counter
             stateTimeout = setTimeout(() => {
-                console.log(`[STATE TRANSITION] Attempting to transition to 'working' state.`);
+                console.log(`[STATE TRANSITION] Changing state to 'working' state.`);
                 setState('working');
             }, NORMAL_DURATION * POLL_INTERVAL);
             break;
 
         case 'working':
             tocka.className = 'circle normal working';
-            console.log(`[STATE WORKING] Entering 'working' state.`);
+            console.log(`[WORKING STATE] Entering 'working' state.`);
             break;
 
         case 'error':
-            console.log(`[STATE ERROR] Entering 'error' state.`);
+            console.log(`[ERROR STATE] Entering 'error' state.`);
             tocka.className = 'circle error';
             break;
 
         case 'error-working':
             tocka.className = 'circle error working';
-            console.log(`[STATE ERROR-WORKING] Entering 'error-working' state.`);
+            console.log(`[ERROR-WORKING STATE] Entering 'error-working' state.`);
             break;
 
         case 'internal-error':
-            console.log(`[STATE INTERNAL-ERROR] Entering 'internal-error' state.`);
+            console.log(`[INTERNAL-ERROR STATE] Entering 'internal-error' state.`);
             tocka.className = 'circle internal-error';
             break;
 
         case 'internal-error-working':
             tocka.className = 'circle internal-error working';
-            console.log(`[STATE INTERNAL-ERROR-WORKING] Entering 'internal-error-working' state.`);
+            console.log(`[INTERNAL-ERROR-WORKING STATE] Entering 'internal-error-working' state.`);
             break;
     }
 
