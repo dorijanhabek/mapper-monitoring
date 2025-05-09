@@ -15,7 +15,7 @@ let currentState = 'normal'; // Tracks the current state
 
 function setRandomGlitchDirections() {
     const tocka = document.getElementById('tocka');
-    const glitchIntensity = Math.random() * 500; // Randomize intensity dynamically (0 to 500px)
+    const glitchIntensity = Math.random() * 400; // Randomize intensity dynamically (0 to 400px)
 
     // Randomize directions for each axis
     tocka.style.setProperty('--x1', `${(Math.random() - 0.5) * glitchIntensity}px`);
@@ -29,7 +29,7 @@ function setRandomGlitchDirections() {
 }
 
 function triggerGlitchEffect(
-    duration = Math.floor(1000 + Math.random() * 3000), // 1s–4s randomly
+    duration = Math.floor(2000 + Math.random() * 4000), // 2s–4s randomly
     interval = Math.floor(200 + Math.random() * 400)     // 200ms–500ms randomly
     ) {
     const tocka = document.getElementById('tocka');
@@ -71,7 +71,6 @@ async function checkAlerts() {
 
             if (currentState === 'internal-error') {
                 internalErrorCount++;
-                triggerGlitchEffect();
                 console.log(
                     `[INTERNAL ERROR STATE] Staying in 'internal-error'. ${ERROR_DURATION - internalErrorCount} intervals before transitioning to 'internal-error-working'.`
                 );
@@ -81,11 +80,14 @@ async function checkAlerts() {
                 }
             } else if (currentState === 'internal-error-working') {
                 console.log(`[INTERNAL-ERROR-WORKING STATE] Errors still present. Staying in 'internal-error-working' state.`);
-                triggerGlitchEffect();
             } else {
                 console.log(`[STATE TRANSITION] Changing state to 'internal-error'.`);
                 internalErrorCount = 0;
                 setState('internal-error');
+            }
+            // Centralized glitch trigger
+            if (['internal-error', 'internal-error-working'].includes(currentState)) {
+                triggerGlitchEffect();
             }
 
             return;
@@ -97,7 +99,6 @@ async function checkAlerts() {
             console.log(`[ALERT FOUND] Active alerts detected.`);
             if (currentState === 'error') {
                 errorCount++;
-                triggerGlitchEffect();
                 console.log(
                     `[ERROR STATE] Staying in 'error' state. ${ERROR_DURATION - errorCount} intervals before transitioning to 'error-working'.`
                 );
@@ -107,12 +108,16 @@ async function checkAlerts() {
                 }
             } else if (currentState === 'error-working') {
                 console.log(`[ERROR-WORKING STATE] Alerts still present. Staying in 'error-working' state.`);
-                triggerGlitchEffect();
             } else {
                 console.log(`[STATE TRANSITION] Changing state to 'error'.`);
                 errorCount = 0; // Reset error counter
                 setState('error');
             }
+            // Centralized glitch trigger
+            if (['error', 'error-working'].includes(currentState)) {
+                triggerGlitchEffect();
+            }
+
         } else {
             console.log(`[NO ALERTS] No active alerts detected.`);
             if (currentState === 'error-working' || currentState === 'error' || currentState === 'internal-error' || currentState === 'internal-error-working') {
@@ -170,20 +175,7 @@ window.setState = function (state) {
 
         case 'error':
             console.log(`[STATE ERROR] Entering 'error' state.`);
-            tocka.className = 'circle error glitch-active';
-
-            const glitchDuration = 2000; // Total glitch duration in ms
-            const glitchInterval = 300; // Time between each glitch step in ms
-
-            const glitchEffect = setInterval(() => {
-                setRandomGlitchDirections(); // Apply a new random glitch
-            }, glitchInterval);
-
-            setTimeout(() => {
-                clearInterval(glitchEffect); // Stop the glitch effect
-                tocka.classList.remove('glitch-active');
-                tocka.classList.add('error'); // Set to the final error state
-            }, glitchDuration);
+            tocka.className = 'circle error';
             break;
 
         case 'error-working':
@@ -196,20 +188,7 @@ window.setState = function (state) {
 
         case 'internal-error':
             console.log(`[STATE INTERNAL-ERROR] Entering 'internal-error' state.`);
-            tocka.className = 'circle internal-error glitch-active';
-
-            const glitchDurationInternal = 2000;
-            const glitchIntervalInternal = 300;
-
-            const glitchEffectInternal = setInterval(() => {
-                setRandomGlitchDirections();
-            }, glitchIntervalInternal);
-
-            setTimeout(() => {
-                clearInterval(glitchEffectInternal);
-                tocka.classList.remove('glitch-active');
-                tocka.classList.add('internal-error'); // ensures the visual style persists
-            }, glitchDurationInternal);
+            tocka.className = 'circle internal-error';
             break;
 
         case 'internal-error-working':
