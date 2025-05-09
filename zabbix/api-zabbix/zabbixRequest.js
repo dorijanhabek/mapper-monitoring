@@ -17,7 +17,7 @@ async function fetchZabbixProblems({ url, token, mode }) {
       severities: [4, 5], // High + Disaster
       sortfield: 'eventid',
       sortorder: 'DESC',
-      acknowledged: 'false',
+      acknowledged: false,
       time_from: sevenDaysAgo
     },
     id: 1

@@ -15,7 +15,7 @@ let currentState = 'normal'; // Tracks the current state
 
 function setRandomGlitchDirections() {
     const tocka = document.getElementById('tocka');
-    const glitchIntensity = Math.random() * 300; // Randomize intensity dynamically (0 to 300px)
+    const glitchIntensity = Math.random() * 400; // Randomize intensity dynamically (0 to 400px)
 
     // Randomize directions for each axis
     tocka.style.setProperty('--x1', `${(Math.random() - 0.5) * glitchIntensity}px`);
@@ -26,6 +26,47 @@ function setRandomGlitchDirections() {
     tocka.style.setProperty('--y3', `${(Math.random() - 0.5) * glitchIntensity}px`);
     tocka.style.setProperty('--x4', `${(Math.random() - 0.5) * glitchIntensity}px`);
     tocka.style.setProperty('--y4', `${(Math.random() - 0.5) * glitchIntensity}px`);
+}
+
+function triggerGlitchEffect(
+    duration = 2000,
+    interval = Math.floor(200 + Math.random() * 400) // 200ms–500ms randomly
+    ) {
+    const tocka = document.getElementById('tocka');
+    const innerCircle = tocka.querySelector('.inner-circle');
+
+    // Remove pulse animation if present
+    innerCircle.classList.remove('animate');
+
+    // Activate glitch effect
+    tocka.classList.add('glitch-active');
+
+    const glitchEffect = setInterval(() => {
+        setRandomGlitchDirections();
+    }, interval);
+
+    setTimeout(() => {
+        clearInterval(glitchEffect);
+        tocka.classList.remove('glitch-active');
+
+        // Reapply pulse animation if we’re still in a working state
+        if (tocka.classList.contains('working')) {
+            innerCircle.classList.add('animate');
+        }
+    }, duration);
+}
+
+function triggerPulseEffect(delay = ANIMATION_DELAY) {
+    const tocka = document.getElementById('tocka');
+    const innerCircle = tocka.querySelector('.inner-circle');
+
+    // Ensure animation is not stacked
+    innerCircle.classList.remove('animate');
+
+    // Add pulse effect after a short delay
+    pulseTimeout = setTimeout(() => {
+        innerCircle.classList.add('animate');
+    }, delay);
 }
 
 async function checkAlerts() {
@@ -57,6 +98,10 @@ async function checkAlerts() {
                 internalErrorCount = 0;
                 setState('internal-error');
             }
+            // Centralized glitch trigger
+            if (['internal-error', 'internal-error-working'].includes(currentState)) {
+                triggerGlitchEffect();
+            }
 
             return;
         } else {
@@ -81,6 +126,11 @@ async function checkAlerts() {
                 errorCount = 0; // Reset error counter
                 setState('error');
             }
+            // Centralized glitch trigger
+            if (['error', 'error-working'].includes(currentState)) {
+                triggerGlitchEffect();
+            }
+
         } else {
             console.log(`[NO ALERTS] No active alerts detected.`);
             if (currentState === 'error-working' || currentState === 'error' || currentState === 'internal-error' || currentState === 'internal-error-working') {
@@ -131,62 +181,31 @@ window.setState = function (state) {
         case 'working':
             tocka.className = 'circle normal working';
             console.log(`[STATE WORKING] Entering 'working' state.`);
-            pulseTimeout = setTimeout(() => {
-                innerCircle.classList.add('animate');
-            }, ANIMATION_DELAY);
             break;
 
         case 'error':
             console.log(`[STATE ERROR] Entering 'error' state.`);
-            tocka.className = 'circle error glitch-active';
-
-            const glitchDuration = 2000; // Total glitch duration in ms
-            const glitchInterval = 300; // Time between each glitch step in ms
-
-            const glitchEffect = setInterval(() => {
-                setRandomGlitchDirections(); // Apply a new random glitch
-            }, glitchInterval);
-
-            setTimeout(() => {
-                clearInterval(glitchEffect); // Stop the glitch effect
-                tocka.classList.remove('glitch-active');
-                tocka.classList.add('error'); // Set to the final error state
-            }, glitchDuration);
+            tocka.className = 'circle error';
             break;
 
         case 'error-working':
             tocka.className = 'circle error working';
             console.log(`[STATE ERROR-WORKING] Entering 'error-working' state.`);
-            pulseTimeout = setTimeout(() => {
-                innerCircle.classList.add('animate');
-            }, ANIMATION_DELAY);
             break;
 
         case 'internal-error':
             console.log(`[STATE INTERNAL-ERROR] Entering 'internal-error' state.`);
-            tocka.className = 'circle internal-error glitch-active';
-
-            const glitchDurationInternal = 2000;
-            const glitchIntervalInternal = 300;
-
-            const glitchEffectInternal = setInterval(() => {
-                setRandomGlitchDirections();
-            }, glitchIntervalInternal);
-
-            setTimeout(() => {
-                clearInterval(glitchEffectInternal);
-                tocka.classList.remove('glitch-active');
-                tocka.classList.add('internal-error'); // ensures the visual style persists
-            }, glitchDurationInternal);
+            tocka.className = 'circle internal-error';
             break;
 
         case 'internal-error-working':
             tocka.className = 'circle internal-error working';
             console.log(`[STATE INTERNAL-ERROR-WORKING] Entering 'internal-error-working' state.`);
-            pulseTimeout = setTimeout(() => {
-                innerCircle.classList.add('animate');
-            }, ANIMATION_DELAY);
             break;
+    }
+
+    if (['working', 'error-working', 'internal-error-working'].includes(state)) {
+        triggerPulseEffect();
     }
 };
 
