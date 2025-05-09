@@ -17,7 +17,7 @@ app.get('/health', (req, res) => {
   });
 
 // Configurable time variables (in milliseconds)
-const POLL_INTERVAL = process.env.POLL_INTERVAL; // How often to check for alerts
+const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10); // How often to check for alerts
 
 // Path to alerts.json in the tocka folder
 const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');

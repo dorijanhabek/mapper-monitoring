@@ -6,7 +6,7 @@ const app = express();
 
 const PORT = 80;
 const API_HEALTH_URL = process.env.API_URL;
-const POLL_INTERVAL = process.env.POLL_INTERVAL;
+const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10);
 const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');
 
 // Fail fast if required env vars are missing
