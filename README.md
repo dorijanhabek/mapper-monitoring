@@ -6,3 +6,37 @@
 
 ![2025-05-08 23_42_14-Zabbix docker_ Configuration of users and 3 more pages - Personal - Microsoft​ E](https://github.com/user-attachments/assets/0c530c96-1f2e-460c-8836-345a1a5381a0)
 
+# Zabbix Api Authentication methods:
+
+## NEW zabbix
+```
+curl --request POST \
+  --url 'ZABBIX_URL' \
+  --header 'Content-Type: application/json-rpc' \
+  --header 'Authorization: Bearer ZABBIX_TOKEN' \
+  --data '{
+    "jsonrpc": "2.0",
+    "method": "problem.get",
+    "params": {
+      "severities": [4, 5],
+      "sortfield": "eventid",
+      "sortorder": "DESC"
+    },
+    "id": 1
+ }'
+```
+
+## OLD Zabbix
+``` 
+curl -H "Content-Type: application/json-rpc" -X POST ZABBIX_URL -d '{
+    "jsonrpc": "2.0",
+    "method": "problem.get",
+    "params": {
+      "severities": [4, 5],
+      "sortfield": "eventid",
+      "sortorder": "DESC"
+    },
+    "auth": "ZABBIX_TOKEN",
+    "id": 1
+ }'
+```
