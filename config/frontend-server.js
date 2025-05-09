@@ -16,7 +16,12 @@ if (!API_HEALTH_URL || !POLL_INTERVAL) {
   }
 
 // Serve static frontend files
-+app.use(express.static(path.join(__dirname, 'tocka')));
+app.use(express.static(path.join(__dirname, 'tocka')));
+
+// Serve alerts.json
+app.get('/alerts', (req, res) => {
+  res.sendFile(ALERT_FILE);
+});
 
 // Health route for container monitoring
 app.get('/health', (req, res) => {
