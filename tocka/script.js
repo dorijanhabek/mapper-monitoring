@@ -29,7 +29,7 @@ function setRandomGlitchDirections() {
 }
 
 function triggerGlitchEffect(
-    duration = Math.floor(2000 + Math.random() * 4000), // 2s–4s randomly
+    duration = 2000,
     interval = Math.floor(200 + Math.random() * 400)     // 200ms–500ms randomly
     ) {
     const tocka = document.getElementById('tocka');
@@ -54,6 +54,19 @@ function triggerGlitchEffect(
             innerCircle.classList.add('animate');
         }
     }, duration);
+}
+
+function triggerPulseEffect(delay = ANIMATION_DELAY) {
+    const tocka = document.getElementById('tocka');
+    const innerCircle = tocka.querySelector('.inner-circle');
+
+    // Ensure animation is not stacked
+    innerCircle.classList.remove('animate');
+
+    // Add pulse effect after a short delay
+    pulseTimeout = setTimeout(() => {
+        innerCircle.classList.add('animate');
+    }, delay);
 }
 
 async function checkAlerts() {
@@ -168,9 +181,6 @@ window.setState = function (state) {
         case 'working':
             tocka.className = 'circle normal working';
             console.log(`[STATE WORKING] Entering 'working' state.`);
-            pulseTimeout = setTimeout(() => {
-                innerCircle.classList.add('animate');
-            }, ANIMATION_DELAY);
             break;
 
         case 'error':
@@ -181,9 +191,6 @@ window.setState = function (state) {
         case 'error-working':
             tocka.className = 'circle error working';
             console.log(`[STATE ERROR-WORKING] Entering 'error-working' state.`);
-            pulseTimeout = setTimeout(() => {
-                innerCircle.classList.add('animate');
-            }, ANIMATION_DELAY);
             break;
 
         case 'internal-error':
@@ -194,10 +201,11 @@ window.setState = function (state) {
         case 'internal-error-working':
             tocka.className = 'circle internal-error working';
             console.log(`[STATE INTERNAL-ERROR-WORKING] Entering 'internal-error-working' state.`);
-            pulseTimeout = setTimeout(() => {
-                innerCircle.classList.add('animate');
-            }, ANIMATION_DELAY);
             break;
+    }
+
+    if (['working', 'error-working', 'internal-error-working'].includes(state)) {
+        triggerPulseEffect();
     }
 };
 
