@@ -1,5 +1,5 @@
 // Configurable time variables (in milliseconds)
-const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10); // How often to check for alerts
+const POLL_INTERVAL = 10000; // How often to check for alerts
 const NORMAL_DURATION = 3; // Number of intervals to stay in the normal state before transitioning to working
 const ERROR_DURATION = 3; // Number of intervals to stay in the error state before transitioning to error-working
 const ANIMATION_DELAY = 2000; // Delay for animations in working and error-working states
@@ -12,12 +12,6 @@ let errorCount = 0; // Tracks how many intervals the error state has persisted
 let normalCount = 0; // Tracks how many intervals the normal state has persisted
 let internalErrorCount = 0; // Tracks internal-error intervals
 let currentState = 'normal'; // Tracks the current state
-
-// Fail fast if required env vars are missing
-if (!POLL_INTERVAL) {
-    console.error('[ENV ERROR] Missing POLL_INTERVAL.');
-    process.exit(1);
-  }
 
 function setRandomGlitchDirections() {
     const tocka = document.getElementById('tocka');
