@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY server.js .
 
+COPY zabbixRequest.js .
+
 RUN npm init -y && \
     npm install express axios cors && \
     sed -i 's/"keywords": \[\]/"keywords": ["TOCKA"]/' package.json && \
