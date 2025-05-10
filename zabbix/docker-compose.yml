@@ -28,8 +28,6 @@ services:
       ZABBIX_LOOKBACK_SECONDS: 604800
     ports:
       - "3000:3000"
-    volumes:
-      - ../tocka:/app/tocka
     restart: unless-stopped
     networks:
       - tocka-network

@@ -28,8 +28,6 @@ services:
       - "3000:3000"
     depends_on:
       - tocka-alertmanager
-    volumes:
-      - ../tocka:/app/tocka
     restart: unless-stopped
     networks:
       - tocka-network

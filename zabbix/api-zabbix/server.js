@@ -15,64 +15,72 @@ const ZABBIX_TOKEN = process.env.ZABBIX_TOKEN;
 const ZABBIX_MODE = process.env.ZABBIX_MODE;
 const ZABBIX_LOOKBACK_SECONDS = process.env.ZABBIX_LOOKBACK_SECONDS;
 
-//Fail fast if required env vars are missing
+// Fail fast if required env vars are missing
 if (!ZABBIX_URL || !ZABBIX_TOKEN || !POLL_INTERVAL || !ZABBIX_LOOKBACK_SECONDS) {
     console.error('[ENV ERROR] Missing ZABBIX_URL, ZABBIX_TOKEN, POLL_INTERVAL or ZABBIX_LOOKBACK_SECONDS.');
     process.exit(1);
-  } 
+}
 
-// Add health check endpoint
-app.get('/health', (req, res) => {
-    res.status(200).send('API SERVER healthy');
-  });
-
-// Path to alerts.json in the tocka folder
-const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');
+// In-memory alert state
+let alertStatus = {
+    hasActiveAlerts: false,
+    internalError: false
+};
 
 app.use(cors());
 
-// Ensure alerts.json exists with a default false state
-fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: false }, null, 2));
-console.log('[INIT] Reset alerts.json to default false state.');
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).send('API SERVER healthy');
+});
 
-// Function to check Zabbix alerts and update alerts.json
+// Internal error state
+app.get('/source', (req, res) => {
+    res.status(200).json({ internalError: alertStatus.internalError });
+});
+
+// Active alerts status
+app.get('/alerts', (req, res) => {
+    res.status(200).json({ hasActiveAlerts: alertStatus.hasActiveAlerts });
+});
+
+// Function to check Zabbix alerts and update in-memory state
 const updateAlertState = async () => {
     console.log('\n[------------------------------------------------------------]\n');
     console.log('[ALERT CHECK] Checking Zabbix for active problems...');
 
     try {
         const response = await fetchZabbixProblems({
-          url: ZABBIX_URL,
-          token: ZABBIX_TOKEN,
-          mode: ZABBIX_MODE.toLowerCase()
+            url: ZABBIX_URL,
+            token: ZABBIX_TOKEN,
+            mode: ZABBIX_MODE.toLowerCase()
         });
 
         console.log('[SOURCE] Zabbix response:', JSON.stringify(response.data, null, 2));
 
         if (response.data.error) {
-            fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
-            console.log('[ERROR CHECK] Updated internal error state: { internalError: true }');
-            throw new Error(`Zabbix API error: ${response.data.error.message} — ${response.data.error.data}`);
+            alertStatus = { hasActiveAlerts: false, internalError: true };
+            console.log('[ERROR CHECK] Updated internal error state:', { internalError: alertStatus.internalError });
+            throw new Error(`[SOURCE ERROR] Zabbix API error: ${response.data.error.message} — ${response.data.error.data}`);
         }
 
         if (Array.isArray(response.data.result)) {
             const hasActiveAlerts = response.data.result.length > 0;
-
-            fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts, internalError: false }, null, 2));
-            console.log('[ALERT CHECK] Updated alert state:', { hasActiveAlerts });
-            console.log('[ERROR CHECK] Updated internal error state: { internalError: false }');
+            alertStatus = { hasActiveAlerts, internalError: false };
+            console.log('[ALERT CHECK] Updated alert state:', { hasActiveAlerts: alertStatus.hasActiveAlerts });
+            console.log('[ERROR CHECK] Updated internal error state:', { internalError: alertStatus.internalError });
         } else {
-            fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
-            console.log('[ERROR CHECK] Updated internal error state: { internalError: true }');
-            throw new Error(`Unexpected Zabbix response structure: 'result' is not an array.`);
+            alertStatus = { hasActiveAlerts: false, internalError: true };
+            console.log('[ERROR CHECK] Updated internal error state:', { internalError: alertStatus.internalError });
+            throw new Error(`[SOURCE ERROR] Unexpected Zabbix response structure: 'result' is not an array.`);
         }
 
     } catch (error) {
-        //console.error('[SOURCE ERROR] Failed to fetch problems from Zabbix:', error.message);
         console.error('[SOURCE ERROR] Failed to fetch problems from Zabbix!');
-        fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
-        console.log('[ERROR CHECK] Updated internal error state: { internalError: true }');
+        alertStatus = { hasActiveAlerts: false, internalError: true };
+        console.log('[ERROR CHECK] Updated internal error state:', { internalError: alertStatus.internalError });
     }
+
     console.log('\n[------------------------------------------------------------]\n');
 };
 
@@ -83,6 +91,7 @@ updateAlertState();
 // Periodically update the alert status
 setInterval(updateAlertState, POLL_INTERVAL);
 
+// Start the server
 app.listen(3000, () => {
     console.log(`[API SERVER] Running on port 3000. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
 });
