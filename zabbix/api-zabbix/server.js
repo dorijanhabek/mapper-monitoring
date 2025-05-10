@@ -37,7 +37,7 @@ console.log('[INIT] Reset alerts.json to default false state.');
 
 // Function to check Zabbix alerts and update alerts.json
 const updateAlertState = async () => {
-    console.log('[------------------------------]');
+    console.log('\n[------------------------------------------------------------]\n');
     console.log('[ALERT CHECK] Checking Zabbix for active problems...');
 
     try {
@@ -72,7 +72,7 @@ const updateAlertState = async () => {
         fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
         console.log('[ERROR CHECK] Updated internal error state: { internalError: true }');
     }
-    console.log('[------------------------------]');
+    console.log('\n[------------------------------------------------------------]\n');
 };
 
 // Initial check
