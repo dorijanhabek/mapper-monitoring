@@ -209,30 +209,6 @@ window.setState = function (state) {
     }
 };
 
-//const circle = document.querySelector('.circle');
-
-//document.addEventListener('mousemove', (event) => {
-//    const rect = circle.getBoundingClientRect(); // Get the position of the circle
-//    const circleCenterX = rect.left + rect.width / 2;
-//    const circleCenterY = rect.top + rect.height / 2;
-//
-//    // Adjust the divisor to increase or decrease movement distance
-//    const sensitivity = 10; // Lower this value to increase movement distance
-//    const offsetX = (event.clientX - circleCenterX) / sensitivity;
-//    const offsetY = (event.clientY - circleCenterY) / sensitivity;
-//
-//    // Apply the offset as a transform
-//    circle.style.transition = 'transform 1s ease-out'; // Smooth start when following the cursor
-//    circle.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-//});
-
-
-// Reset the circle to the center slowly when the cursor leaves the screen
-//document.addEventListener('mouseleave', () => {
-//    circle.style.transition = 'transform 1s ease-out'; // Slow return to center
-//    circle.style.transform = 'translate(0, 0)'; // Reset position
-//});
-
 // Initialize state
 console.log(`[INIT] Initializing state to 'normal'.`);
 setState('normal');
