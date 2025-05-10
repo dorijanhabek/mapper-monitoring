@@ -6,8 +6,16 @@ const cors = require('cors');
 const app = express();
 const fetchZabbixProblems = require('./zabbixRequest');
 
+// Configurable time variables (in milliseconds)
+const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10); // How often to check for alerts
+
+// Zabbix connection
+const ZABBIX_URL = process.env.ZABBIX_URL;
+const ZABBIX_TOKEN = process.env.ZABBIX_TOKEN;
+const ZABBIX_MODE = process.env.ZABBIX_MODE;
+
 //Fail fast if required env vars are missing
-if (!process.env.ZABBIX_URL || !process.env.ZABBIX_TOKEN || !process.env.POLL_INTERVAL || !process.env.ZABBIX_LOOKBACK_SECONDS) {
+if (!ZABBIX_URL || !ZABBIX_TOKEN || !POLL_INTERVAL || !ZABBIX_LOOKBACK_SECONDS) {
     console.error('[ENV ERROR] Missing ZABBIX_URL, ZABBIX_TOKEN, POLL_INTERVAL or ZABBIX_LOOKBACK_SECONDS.');
     process.exit(1);
   } 
@@ -17,15 +25,8 @@ app.get('/health', (req, res) => {
     res.status(200).send('API SERVER healthy');
   });
 
-// Configurable time variables (in milliseconds)
-const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10); // How often to check for alerts
-
 // Path to alerts.json in the tocka folder
 const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');
-
-// Zabbix connection
-const ZABBIX_URL = process.env.ZABBIX_URL;
-const ZABBIX_TOKEN = process.env.ZABBIX_TOKEN; // Replace with your real API token
 
 app.use(cors());
 
@@ -39,9 +40,9 @@ const updateAlertState = async () => {
 
     try {
         const response = await fetchZabbixProblems({
-          url: process.env.ZABBIX_URL,
-          token: process.env.ZABBIX_TOKEN,
-          mode: process.env.ZABBIX_MODE.toLowerCase()
+          url: ZABBIX_URL,
+          token: ZABBIX_TOKEN,
+          mode: ZABBIX_MODE.toLowerCase()
         });
 
         console.log('[SOURCE] Zabbix response:', JSON.stringify(response.data, null, 2));

@@ -5,8 +5,14 @@ const path = require('path');
 const cors = require('cors');
 const app = express();
 
+// Configurable time variables (in milliseconds)
+const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10); // How often to check for alerts
+
+// Alertmanager connection
+const ALERTMANAGER_URL = process.env.ALERTMANAGER_URL;
+
 // Fail fast if required env vars are missing
-if (!process.env.ALERTMANAGER_URL || !process.env.POLL_INTERVAL) {
+if (!ALERTMANAGER_URL || !POLL_INTERVAL) {
     console.error('[ENV ERROR] Missing ALERTMANAGER_URL or POLL_INTERVAL.');
     process.exit(1);
   }
@@ -15,9 +21,6 @@ if (!process.env.ALERTMANAGER_URL || !process.env.POLL_INTERVAL) {
 app.get('/health', (req, res) => {
     res.status(200).send('API SERVER healthy');
   });
-
-// Configurable time variables (in milliseconds)
-const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10); // How often to check for alerts
 
 // Path to alerts.json in the tocka folder
 const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');
@@ -33,7 +36,7 @@ const updateAlertState = async () => {
     console.log('[ALERT CHECK] Checking Alertmanager for active problems...');
 
     try {
-        const response = await axios.get(process.env.ALERTMANAGER_URL);
+        const response = await axios.get(ALERTMANAGER_URL);
         const hasActiveAlerts = response.data.length > 0;
 
         console.log('[SOURCE] Alertmanager response:', JSON.stringify(response.data, null, 2));

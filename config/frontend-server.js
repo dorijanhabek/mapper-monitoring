@@ -47,3 +47,5 @@ checkBackendHealth();
 app.listen(PORT, () => {
   console.log(`[FRONTEND SERVER] Running on port ${PORT}. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
 });
+
+console.log('[FRONTEND SERVER] API_HEALTH_URL:', API_HEALTH_URL);
