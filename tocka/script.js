@@ -75,7 +75,7 @@ async function checkAlerts() {
         const response = await fetch('./alerts.json'); // Fetch alerts.json file in the same folder
         if (!response.ok) {
             fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`[INTERNAL ERROR] HTTP error, status: ${response.status}`);
         }
 
         const data = await response.json();
