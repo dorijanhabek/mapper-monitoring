@@ -44,12 +44,12 @@ const checkBackendHealth = async () => {
   };
 
   try {
-    //Check /health
+    // Check /health
     const healthRes = await axios.get(`${API_HEALTH_URL}/health`, { timeout: 3000 });
     if (healthRes.status !== 200) throw new Error('[API ERROR] API not responding');
     console.log('[API CHECK] API is healthy');
 
-    // 2. Check /source
+    // Check /source
     const sourceRes = await axios.get(`${API_HEALTH_URL}/source`, { timeout: 3000 });
     if (sourceRes.data.internalError) {
       console.warn('[SOURCE ERROR] Detected internal error');
@@ -60,7 +60,7 @@ const checkBackendHealth = async () => {
     }
     console.log('[SOURCE] No internal error reported');
 
-    // 3. Check /alerts
+    // Check /alerts
     const alertRes = await axios.get(`${API_HEALTH_URL}/alerts`, { timeout: 3000 });
     if (alertRes.data.hasActiveAlerts) {
       finalState.hasActiveAlerts = true;
@@ -72,7 +72,8 @@ const checkBackendHealth = async () => {
 
     // All good — write clean state
     fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
-    console.log('[WRITE] No alerts, no internal error — clean state written');
+    console.log('[WRITE] No alerts, no internal error');
+    console.log('[CHECK DONE]');
 
   } catch (error) {
     console.warn('[API ERROR] Backend unreachable or failure occurred');
@@ -81,7 +82,6 @@ const checkBackendHealth = async () => {
     console.log('[WRITE] internalError=true written to alerts.json');
   }
 
-  console.log('[CHECK COMPLETE]');
   console.log('\n[************************************************************]\n');
 };
 
