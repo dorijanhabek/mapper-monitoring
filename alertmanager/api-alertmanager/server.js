@@ -1,7 +1,5 @@
 const express = require('express');
 const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
 const cors = require('cors');
 const app = express();
 
@@ -15,42 +13,51 @@ const ALERTMANAGER_URL = process.env.ALERTMANAGER_URL;
 if (!ALERTMANAGER_URL || !POLL_INTERVAL) {
     console.error('[ENV ERROR] Missing ALERTMANAGER_URL or POLL_INTERVAL.');
     process.exit(1);
-  }
+}
 
-// Add health check endpoint
-app.get('/health', (req, res) => {
-    res.status(200).send('API SERVER healthy');
-  });
-
-// Path to alerts.json in the tocka folder
-const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');
+// In-memory alert state
+let alertStatus = {
+    hasActiveAlerts: false,
+    internalError: false
+};
 
 app.use(cors());
 
-// Ensure alerts.json exists with a default false state
-fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: false }, null, 2));
-console.log('[INIT] Reset alerts.json to default false state.');
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).send('API SERVER healthy');
+});
 
-// Function to check alerts and update the state in alerts.json
+// Internal error state
+app.get('/source', (req, res) => {
+    res.status(200).json({ internalError: alertStatus.internalError });
+});
+
+// Active alerts status
+app.get('/alerts', (req, res) => {
+    res.status(200).json({ hasActiveAlerts: alertStatus.hasActiveAlerts });
+});
+
+// Function to check Alertmanager alerts and update in-memory state
 const updateAlertState = async () => {
     console.log('\n[------------------------------------------------------------]\n');
     console.log('[ALERT CHECK] Checking Alertmanager for active problems...');
 
     try {
-        const response = await axios.get(ALERTMANAGER_URL);
+        const response = await axios.get(`${ALERTMANAGER_URL}/api/v2/alerts`, { timeout: 3000 });
         const hasActiveAlerts = response.data.length > 0;
 
-        console.log('[SOURCE] Alertmanager response:', JSON.stringify(response.data, null, 2));
+        alertStatus = { hasActiveAlerts, internalError: false };
 
-        fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts, internalError: false }, null, 2));
-        console.log('[ALERT CHECK] Updated alert state:', { hasActiveAlerts });
-        console.log('[ERROR CHECK] Updated internal error state: { internalError: false }');
+        console.log('[SOURCE] Alertmanager response:', JSON.stringify(response.data, null, 2));
+        console.log('[ALERT CHECK] Updated alert state:', { hasActiveAlerts: alertStatus.hasActiveAlerts });
+        console.log('[ERROR CHECK] Updated internal error state:', { internalError: alertStatus.internalError });
     } catch (error) {
-        //console.error('[SOURCE ERROR] Failed to fetch alerts:', error);
-        console.error('[SOURCE ERROR] Failed to fetch alerts!');
-        fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
-        console.log('[ERROR CHECK] Updated internal error state: { internalError: true }');
+        console.error('[SOURCE ERROR] Failed to fetch alerts from Alertmanager!');
+        alertStatus = { hasActiveAlerts: false, internalError: true };
+        console.log('[ERROR CHECK] Updated internal error state:', { internalError: alertStatus.internalError });
     }
+
     console.log('\n[------------------------------------------------------------]\n');
 };
 
@@ -59,7 +66,7 @@ console.log('[INIT] Performing initial Alertmanager alert check...');
 updateAlertState();
 
 // Periodically update the alert status
-setInterval(updateAlertState, POLL_INTERVAL); // Use the POLL_INTERVAL variable
+setInterval(updateAlertState, POLL_INTERVAL);
 
 app.listen(3000, () => {
     console.log(`[API SERVER] Running on port 3000. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
