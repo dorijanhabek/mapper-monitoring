@@ -43,9 +43,11 @@ const updateAlertState = async () => {
 
         fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts, internalError: false }, null, 2));
         console.log('[ALERT CHECK] Updated alert state:', { hasActiveAlerts });
+        console.log('[ERROR CHECK] Updated internal error state: { internalError: false }');
     } catch (error) {
         console.error('[SOURCE ERROR] Failed to fetch alerts:', error);
         fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
+        console.log('[ERROR CHECK] Updated internal error state: { internalError: true }');
     }
 };
 
