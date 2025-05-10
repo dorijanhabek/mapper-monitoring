@@ -68,7 +68,8 @@ const updateAlertState = async () => {
         }
 
     } catch (error) {
-        console.error('[SOURCE ERROR] Failed to fetch problems from Zabbix:', error.message);
+        //console.error('[SOURCE ERROR] Failed to fetch problems from Zabbix:', error.message);
+        console.error('[SOURCE ERROR] Failed to fetch problems from Zabbix!');
         fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
         console.log('[ERROR CHECK] Updated internal error state: { internalError: true }');
     }
