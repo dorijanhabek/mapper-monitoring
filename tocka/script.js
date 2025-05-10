@@ -13,9 +13,6 @@ let normalCount = 0; // Tracks how many intervals the normal state has persisted
 let internalErrorCount = 0; // Tracks internal-error intervals
 let currentState = 'normal'; // Tracks the current state
 
-// Path to alerts.json in the tocka folder
-const ALERT_FILE = path.join(__dirname, 'alerts.json');
-
 function setRandomGlitchDirections() {
     const tocka = document.getElementById('tocka');
     const glitchIntensity = Math.random() * 400; // Randomize intensity dynamically (0 to 400px)
@@ -77,8 +74,7 @@ async function checkAlerts() {
     try {
         const response = await fetch('./alerts.json'); // Fetch alerts.json file in the same folder
         if (!response.ok) {
-            fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
-            throw new Error(`[INTERNAL ERROR] HTTP error, status: ${response.status}`);
+            throw new Error(`[HTTP ERROR] Status: ${response.status}`);
         }
 
         const data = await response.json();
