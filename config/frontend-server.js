@@ -35,7 +35,7 @@ const checkBackendHealth = async () => {
     if (res.status !== 200) throw new Error(`API SERVER unhealthy: ${res.status}`);
     console.log('[API CHECK] API SERVER is healthy.');
   } catch (error) {
-    console.warn('[API ERROR] API SERVER unreachable:', { internalError });
+    console.warn('[API ERROR] API SERVER unreachable!');
     fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
   }
 };
