@@ -8,8 +8,8 @@ body {
 }
 
 .circle {
-    width: 300px;
-    height: 300px;
+    width: 30vmin;
+    height: 30vmin;
     position: relative;
     display: flex;
     justify-content: center;
@@ -22,7 +22,7 @@ body {
     height: 100%;
     border-radius: 50%;
     position: absolute;
-    border: 24px solid transparent;
+    border: 2vmin solid transparent;
     box-shadow: 0 0 40px transparent;
     transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
