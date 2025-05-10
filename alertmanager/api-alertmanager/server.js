@@ -33,6 +33,7 @@ console.log('[INIT] Reset alerts.json to default false state.');
 
 // Function to check alerts and update the state in alerts.json
 const updateAlertState = async () => {
+    console.log('[----------------------------------------------------------------------------------------------]');
     console.log('[ALERT CHECK] Checking Alertmanager for active problems...');
 
     try {
