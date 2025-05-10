@@ -30,6 +30,7 @@ app.get('/health', (req, res) => {
 
 // Write internalError to alerts.json if API dies
 const checkBackendHealth = async () => {
+  console.log('[******************************]');
   try {
     const res = await axios.get(API_HEALTH_URL, { timeout: 3000 });
     if (res.status !== 200) throw new Error(`API SERVER unhealthy: ${res.status}`);
@@ -38,6 +39,7 @@ const checkBackendHealth = async () => {
     console.warn('[API ERROR] API SERVER is unreachable!');
     fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: true }, null, 2));
   }
+  console.log('[******************************]');
 };
 
 // Start backend monitoring loop
