@@ -13,6 +13,7 @@ const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10); // How often to c
 const ZABBIX_URL = process.env.ZABBIX_URL;
 const ZABBIX_TOKEN = process.env.ZABBIX_TOKEN;
 const ZABBIX_MODE = process.env.ZABBIX_MODE;
+const ZABBIX_LOOKBACK_SECONDS = process.env.ZABBIX_LOOKBACK_SECONDS;
 
 //Fail fast if required env vars are missing
 if (!ZABBIX_URL || !ZABBIX_TOKEN || !POLL_INTERVAL || !ZABBIX_LOOKBACK_SECONDS) {
