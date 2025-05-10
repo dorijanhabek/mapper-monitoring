@@ -70,7 +70,7 @@ function triggerPulseEffect(delay = ANIMATION_DELAY) {
 }
 
 async function checkAlerts() {
-    console.log(`[CHECK ALERTS] Checking for alerts...`);
+    console.log(`[ALERT CHECK] Checking for alerts...`);
     try {
         const response = await fetch('./alerts.json'); // Fetch alerts.json file in the same folder
         if (!response.ok) {
@@ -153,7 +153,7 @@ async function checkAlerts() {
             }
         }
     } catch (error) {
-        console.error('[ERROR] Error checking alerts:', error);
+        console.error('[INTERNAL ERROR] Error checking alerts:', error);
     }
 }
 
@@ -165,7 +165,7 @@ window.setState = function (state) {
     clearTimeout(stateTimeout);
     clearTimeout(pulseTimeout);
 
-    console.log(`[SET STATE] Transitioning from ${currentState} to ${state}`);
+    console.log(`[STATE TRANSITION] Transitioning from ${currentState} to ${state}`);
     currentState = state; // Update the current state
 
     switch (state) {

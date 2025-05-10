@@ -35,7 +35,7 @@ console.log('[INIT] Reset alerts.json to default false state.');
 
 // Function to check Zabbix alerts and update alerts.json
 const updateAlertState = async () => {
-    console.log('[CHECK ALERTS] Checking Zabbix for active problems...');
+    console.log('[ALERT CHECK] Checking Zabbix for active problems...');
 
     try {
         const response = await fetchZabbixProblems({

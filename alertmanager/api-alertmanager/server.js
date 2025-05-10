@@ -30,7 +30,7 @@ console.log('[INIT] Reset alerts.json to default false state.');
 
 // Function to check alerts and update the state in alerts.json
 const updateAlertState = async () => {
-    console.log('[CHECK ALERTS] Checking Alertmanager for active problems...');
+    console.log('[ALERT CHECK] Checking Alertmanager for active problems...');
 
     try {
         const response = await axios.get(process.env.ALERTMANAGER_URL);
