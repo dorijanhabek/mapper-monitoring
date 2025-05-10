@@ -44,7 +44,7 @@ const updateAlertState = async () => {
     console.log('[ALERT CHECK] Checking Alertmanager for active problems...');
 
     try {
-        const response = await axios.get(ALERTMANAGER_URL);
+        const response = await axios.get(`${ALERTMANAGER_URL}/api/v2/alerts`, { timeout: 3000 });
         const hasActiveAlerts = response.data.length > 0;
 
         alertStatus = { hasActiveAlerts, internalError: false };
