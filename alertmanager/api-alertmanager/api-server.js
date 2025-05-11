@@ -52,13 +52,13 @@ const updateAlertState = async () => {
         console.log('[SOURCE] Alertmanager response:', JSON.stringify(response.data, null, 2));
         console.log('[ALERT CHECK] Updated alert state:', { hasActiveAlerts: alertStatus.hasActiveAlerts });
         console.log('[ERROR CHECK] Updated internal error state:', { internalError: alertStatus.internalError });
+        console.log('\n[------------------------------------------------------------]\n');
     } catch (error) {
         console.error('[SOURCE ERROR] Failed to fetch alerts from Alertmanager!');
         alertStatus = { hasActiveAlerts: false, internalError: true };
         console.log('[ERROR CHECK] Updated internal error state:', { internalError: alertStatus.internalError });
+        console.log('\n[------------------------------------------------------------]\n');
     }
-
-    console.log('\n[------------------------------------------------------------]\n');
 };
 
 // Initial check

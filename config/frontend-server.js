@@ -56,6 +56,7 @@ const checkBackendHealth = async () => {
       finalState.internalError = true;
       fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
       console.log('[WRITE] internalError=true written to alerts.json');
+      console.log('\n[************************************************************]\n');
       return;
     }
     console.log('[SOURCE] No internal error reported');
@@ -73,16 +74,15 @@ const checkBackendHealth = async () => {
     // All good — write clean state
     fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
     console.log('[WRITE] No alerts, no internal error');
-    console.log('[CHECK DONE]');
+    console.log('\n[************************************************************]\n');
 
   } catch (error) {
     console.warn('[API ERROR] Backend unreachable or failure occurred');
     finalState.internalError = true;
     fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
     console.log('[WRITE] internalError=true written to alerts.json');
+    console.log('\n[************************************************************]\n');
   }
-
-  console.log('\n[************************************************************]\n');
 };
 
 

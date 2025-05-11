@@ -61,6 +61,7 @@ const updateAlertState = async () => {
         if (response.data.error) {
             alertStatus = { hasActiveAlerts: false, internalError: true };
             console.log('[ERROR CHECK] Updated internal error state:', { internalError: alertStatus.internalError });
+            console.log('\n[------------------------------------------------------------]\n');
             throw new Error(`[SOURCE ERROR] Zabbix API error: ${response.data.error.message} — ${response.data.error.data}`);
         }
 
@@ -69,9 +70,11 @@ const updateAlertState = async () => {
             alertStatus = { hasActiveAlerts, internalError: false };
             console.log('[ALERT CHECK] Updated alert state:', { hasActiveAlerts: alertStatus.hasActiveAlerts });
             console.log('[ERROR CHECK] Updated internal error state:', { internalError: alertStatus.internalError });
+            console.log('\n[------------------------------------------------------------]\n');
         } else {
             alertStatus = { hasActiveAlerts: false, internalError: true };
             console.log('[ERROR CHECK] Updated internal error state:', { internalError: alertStatus.internalError });
+            console.log('\n[------------------------------------------------------------]\n');
             throw new Error(`[SOURCE ERROR] Unexpected Zabbix response structure: 'result' is not an array.`);
         }
 
@@ -79,9 +82,8 @@ const updateAlertState = async () => {
         console.error('[SOURCE ERROR] Failed to fetch problems from Zabbix!');
         alertStatus = { hasActiveAlerts: false, internalError: true };
         console.log('[ERROR CHECK] Updated internal error state:', { internalError: alertStatus.internalError });
+        console.log('\n[------------------------------------------------------------]\n');
     }
-
-    console.log('\n[------------------------------------------------------------]\n');
 };
 
 // Initial check
