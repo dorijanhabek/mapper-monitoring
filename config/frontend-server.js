@@ -48,47 +48,62 @@ const checkBackendHealth = async () => {
     internalError: false
   };
 
-  try {
-    // Check /health
-    const healthRes = await axios.get(`${API_URL}/health`, { timeout: 3000 });
-    if (healthRes.status !== 200) throw new Error('[API ERROR] API not responding');
-    console.log('[API OK] API is healthy');
+  const apiUrls = API_URL.split(',').map(url => url.trim());
 
-    // Check /internal
-    const sourceRes = await axios.get(`${API_URL}/internal`, { timeout: 3000 });
-    if (sourceRes.data.internalError) {
-      console.warn('[SOURCE ERROR] Detected source error');
+  for (let i = 0; i < apiUrls.length; i++) {
+    const baseUrl = apiUrls[i];
+    const isLast = i === apiUrls.length - 1;
+    console.log('\n[************************************************************]\n');
+
+    try {
+      // Health check
+      const healthRes = await axios.get(`${baseUrl}/health`, { timeout: 3000 });
+      if (healthRes.status !== 200) throw new Error('[API ERROR] API not responding');
+      console.log(`[API OK] ${baseUrl} is healthy`);
+
+      // Internal error check
+      const sourceRes = await axios.get(`${baseUrl}/internal`, { timeout: 3000 });
+      if (sourceRes.data.internalError) {
+        console.warn(`[SOURCE ERROR] ${baseUrl} reported source error`);
+        newState.internalError = true;
+        alertStatus = newState;
+        console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
+        console.log('\n[************************************************************]\n');
+        return;
+      }
+      console.log(`[SOURCE OK] ${baseUrl} has no source errors`);
+
+      // Alerts check
+      const alertRes = await axios.get(`${baseUrl}/alerts`, { timeout: 3000 });
+      if (alertRes.data.hasActiveAlerts) {
+        newState.hasActiveAlerts = true;
+        console.warn(`[ALERT DETECTED] ${baseUrl} has active alerts`);
+        alertStatus = newState;
+        console.log('[UPDATE]', { hasActiveAlerts: alertStatus.hasActiveAlerts }, 'written to memory');
+        console.log('\n[************************************************************]\n');
+        if (isLast) return;
+        continue;
+      }
+      console.log(`[ALERT OK] ${baseUrl} has no alerts`);
+
+    } catch (error) {
+      console.warn(`[API ERROR] ${baseUrl} is unreachable or failed`);
       newState.internalError = true;
       alertStatus = newState;
-      console.log('[UPDATE]', { internalError: alertStatus.internalError },'written to memory');
+      console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
       console.log('\n[************************************************************]\n');
       return;
     }
-    console.log('[SOURCE OK] No source error reported');
-
-    // Check /alerts
-    const alertRes = await axios.get(`${API_URL}/alerts`, { timeout: 3000 });
-    if (alertRes.data.hasActiveAlerts) {
-      newState.hasActiveAlerts = true;
-      console.warn('[ALERT DETECTED] Active alerts detected');
-      alertStatus = newState;
-      console.log('[UPDATE]', { hasActiveAlerts: alertStatus.hasActiveAlerts },'written to memory');
-      console.log('\n[************************************************************]\n');
-      return;
-    }
-
-    console.log('[ALERT OK] No active alerts reported');
-    alertStatus = newState;
-    console.log('[UPDATE] Clean state written to memory:', { hasActiveAlerts: alertStatus.hasActiveAlerts, internalError: alertStatus.internalError });
-    console.log('\n[************************************************************]\n');
-
-  } catch (error) {
-    console.warn('[API ERROR] API unreachable or failure occurred');
-    newState.internalError = true;
-    alertStatus = newState;
-    console.log('[UPDATE]', { internalError: alertStatus.internalError },'written to memory');
-    console.log('\n[************************************************************]\n');
   }
+
+  // Final state evaluation after all checks
+  alertStatus = newState;
+  if (!alertStatus.hasActiveAlerts && !alertStatus.internalError) {
+    console.log('\n[CHECK DONE] Clean state written to memory:', { hasActiveAlerts: alertStatus.hasActiveAlerts, internalError: alertStatus.internalError });
+  } else {
+    console.log('\n[CHECK DONE]', { hasActiveAlerts: alertStatus.hasActiveAlerts, internalError: alertStatus.internalError }, 'written to memory');
+  }
+  console.log('\n[************************************************************]\n');
 };
 
 // Start backend monitoring loop
