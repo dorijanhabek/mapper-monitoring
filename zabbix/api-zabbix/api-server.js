@@ -15,9 +15,12 @@ const ZABBIX_TOKEN = process.env.ZABBIX_TOKEN;
 const ZABBIX_MODE = process.env.ZABBIX_MODE;
 const ZABBIX_LOOKBACK_SECONDS = process.env.ZABBIX_LOOKBACK_SECONDS;
 
+// API server port
+const API_PORT = process.env.API_PORT;
+
 // Fail fast if required env vars are missing
-if (!ZABBIX_URL || !ZABBIX_TOKEN || !POLL_INTERVAL || !ZABBIX_LOOKBACK_SECONDS) {
-    console.error('[ENV ERROR] Missing ZABBIX_URL, ZABBIX_TOKEN, POLL_INTERVAL or ZABBIX_LOOKBACK_SECONDS.');
+if (!ZABBIX_URL || !ZABBIX_TOKEN || !POLL_INTERVAL || !ZABBIX_LOOKBACK_SECONDS || !API_PORT) {
+    console.error('[ENV ERROR] Missing ZABBIX_URL, ZABBIX_TOKEN, POLL_INTERVAL, ZABBIX_LOOKBACK_SECONDS or API_PORT.');
     process.exit(1);
 }
 
@@ -94,8 +97,8 @@ updateAlertState();
 setInterval(updateAlertState, POLL_INTERVAL);
 
 // Start the server
-app.listen(3000, () => {
-    console.log(`[API SERVER] Running on port 3000. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
+app.listen(API_PORT, () => {
+    console.log(`[API SERVER] Running on port ${API_PORT}. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
 });
 
 console.log('[API SERVER] ZABBIX_URL:', ZABBIX_URL);
