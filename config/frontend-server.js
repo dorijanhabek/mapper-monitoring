@@ -39,7 +39,7 @@ app.get('/alerts', (req, res) => {
 
 // Backend check and update in-memory state
 const checkBackendHealth = async () => {
-  console.log('\n[************************************************************]\n');
+  console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
   console.log('[CHECK] Starting full backend status check...');
 
   // Reset state for new poll
@@ -68,7 +68,7 @@ const checkBackendHealth = async () => {
         newState.internalError = true;
         alertStatus = newState;
         console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
-        console.log('\n[************************************************************]\n');
+        console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
         return;
       }
       console.log(`[SOURCE OK] ${baseUrl} has no source errors`);
@@ -80,8 +80,10 @@ const checkBackendHealth = async () => {
         console.warn(`[ALERT DETECTED] ${baseUrl} has active alerts`);
         alertStatus = newState;
         console.log('[UPDATE]', { hasActiveAlerts: alertStatus.hasActiveAlerts }, 'written to memory');
-        console.log('\n[************************************************************]\n');
-        if (isLast) return;
+        if (isLast) {
+          console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
+          return;
+        }
         continue;
       }
       console.log(`[ALERT OK] ${baseUrl} has no alerts`);
@@ -91,7 +93,7 @@ const checkBackendHealth = async () => {
       newState.internalError = true;
       alertStatus = newState;
       console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
-      console.log('\n[************************************************************]\n');
+      console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
       return;
     }
   }
@@ -99,11 +101,13 @@ const checkBackendHealth = async () => {
   // Final state evaluation after all checks
   alertStatus = newState;
   if (!alertStatus.hasActiveAlerts && !alertStatus.internalError) {
+    console.log('\n[************************************************************]');
     console.log('\n[CHECK DONE] Clean state written to memory:', { hasActiveAlerts: alertStatus.hasActiveAlerts, internalError: alertStatus.internalError });
   } else {
+    console.log('\n[************************************************************]');
     console.log('\n[CHECK DONE]', { hasActiveAlerts: alertStatus.hasActiveAlerts, internalError: alertStatus.internalError }, 'written to memory');
   }
-  console.log('\n[************************************************************]\n');
+  console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
 };
 
 // Start backend monitoring loop
