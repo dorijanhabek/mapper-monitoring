@@ -52,14 +52,14 @@ const checkBackendHealth = async () => {
     // Check /source
     const sourceRes = await axios.get(`${API_HEALTH_URL}/source`, { timeout: 3000 });
     if (sourceRes.data.internalError) {
-      console.warn('[SOURCE ERROR] Detected internal error');
+      console.warn('[SOURCE ERROR] Detected source error');
       finalState.internalError = true;
       fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
       console.log('[WRITE] internalError=true written to alerts.json');
       console.log('\n[************************************************************]\n');
       return;
     }
-    console.log('[SOURCE OK] No internal error reported');
+    console.log('[SOURCE OK] No source error reported');
 
     // Check /alerts
     const alertRes = await axios.get(`${API_HEALTH_URL}/alerts`, { timeout: 3000 });
