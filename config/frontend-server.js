@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 
 const PORT = 80;
-const API_HEALTH_URL = process.env.API_URL;
+const API_URL = process.env.API_URL;
 const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10);
 const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');
 
@@ -14,7 +14,7 @@ fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalEr
 console.log('[INIT] Reset alerts.json to default false state.');
 
 // Fail fast if required env vars are missing
-if (!API_HEALTH_URL || !POLL_INTERVAL) {
+if (!API_URL || !POLL_INTERVAL) {
     console.error('[ENV ERROR] Missing API_URL or POLL_INTERVAL.');
     process.exit(1);
   }
@@ -45,46 +45,47 @@ const checkBackendHealth = async () => {
 
   try {
     // Check /health
-    const healthRes = await axios.get(`${API_HEALTH_URL}/health`, { timeout: 3000 });
+    const healthRes = await axios.get(`${API_URL}/health`, { timeout: 3000 });
     if (healthRes.status !== 200) throw new Error('[API ERROR] API not responding');
-    console.log('[API CHECK] API is healthy');
+    console.log('[API OK] API is healthy');
 
     // Check /source
-    const sourceRes = await axios.get(`${API_HEALTH_URL}/source`, { timeout: 3000 });
+    const sourceRes = await axios.get(`${API_URL}/source`, { timeout: 3000 });
     if (sourceRes.data.internalError) {
-      console.warn('[SOURCE ERROR] Detected internal error');
+      console.warn('[SOURCE ERROR] Detected source error');
       finalState.internalError = true;
       fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
       console.log('[WRITE] internalError=true written to alerts.json');
+      console.log('\n[************************************************************]\n');
       return;
     }
-    console.log('[SOURCE] No internal error reported');
+    console.log('[SOURCE OK] No source error reported');
 
     // Check /alerts
-    const alertRes = await axios.get(`${API_HEALTH_URL}/alerts`, { timeout: 3000 });
+    const alertRes = await axios.get(`${API_URL}/alerts`, { timeout: 3000 });
     if (alertRes.data.hasActiveAlerts) {
       finalState.hasActiveAlerts = true;
-      console.warn('[ALERT] Active alerts detected');
+      console.warn('[ALERT DETECTED] Active alerts detected');
       fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
       console.log('[WRITE] hasActiveAlerts=true written to alerts.json');
+      console.log('\n[************************************************************]\n');
       return;
     }
 
     // All good — write clean state
+    console.log('[ALERT OK] No active alerts reported');
     fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
-    console.log('[WRITE] No alerts, no internal error');
-    console.log('[CHECK DONE]');
+    console.log('[WRITE] No alerts, no internal error written to alerts.json');
+    console.log('\n[************************************************************]\n');
 
   } catch (error) {
-    console.warn('[API ERROR] Backend unreachable or failure occurred');
+    console.warn('[API ERROR] API unreachable or failure occurred');
     finalState.internalError = true;
     fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
     console.log('[WRITE] internalError=true written to alerts.json');
+    console.log('\n[************************************************************]\n');
   }
-
-  console.log('\n[************************************************************]\n');
 };
-
 
 // Start backend monitoring loop
 setInterval(checkBackendHealth, POLL_INTERVAL);
@@ -94,4 +95,4 @@ app.listen(PORT, () => {
   console.log(`[FRONTEND SERVER] Running on port ${PORT}. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
 });
 
-console.log('[FRONTEND SERVER] API_HEALTH_URL:', API_HEALTH_URL);
+console.log('[FRONTEND SERVER] API_URL:', API_URL);

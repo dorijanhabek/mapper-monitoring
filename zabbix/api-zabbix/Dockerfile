@@ -2,7 +2,7 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY server.js .
+COPY api-server.js .
 
 COPY zabbixRequest.js .
 
@@ -14,4 +14,4 @@ RUN npm init -y && \
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["node", "api-server.js"]
