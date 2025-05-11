@@ -47,7 +47,7 @@ const checkBackendHealth = async () => {
     // Check /health
     const healthRes = await axios.get(`${API_HEALTH_URL}/health`, { timeout: 3000 });
     if (healthRes.status !== 200) throw new Error('[API ERROR] API not responding');
-    console.log('[API CHECK] API is healthy');
+    console.log('[API OK] API is healthy');
 
     // Check /source
     const sourceRes = await axios.get(`${API_HEALTH_URL}/source`, { timeout: 3000 });
@@ -59,21 +59,23 @@ const checkBackendHealth = async () => {
       console.log('\n[************************************************************]\n');
       return;
     }
-    console.log('[SOURCE] No internal error reported');
+    console.log('[SOURCE OK] No internal error reported');
 
     // Check /alerts
     const alertRes = await axios.get(`${API_HEALTH_URL}/alerts`, { timeout: 3000 });
     if (alertRes.data.hasActiveAlerts) {
       finalState.hasActiveAlerts = true;
-      console.warn('[ALERT] Active alerts detected');
+      console.warn('[ALERT DETECTED] Active alerts detected');
       fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
       console.log('[WRITE] hasActiveAlerts=true written to alerts.json');
+      console.log('\n[************************************************************]\n');
       return;
     }
 
     // All good — write clean state
+    console.log('[ALERT OK] No active alerts reported');
     fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
-    console.log('[WRITE] No alerts, no internal error');
+    console.log('[WRITE] No alerts, no internal error written to alerts.json');
     console.log('\n[************************************************************]\n');
 
   } catch (error) {
@@ -84,7 +86,6 @@ const checkBackendHealth = async () => {
     console.log('\n[************************************************************]\n');
   }
 };
-
 
 // Start backend monitoring loop
 setInterval(checkBackendHealth, POLL_INTERVAL);
