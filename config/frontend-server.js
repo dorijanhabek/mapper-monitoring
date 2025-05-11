@@ -53,6 +53,7 @@ const checkBackendHealth = async () => {
   for (let i = 0; i < apiUrls.length; i++) {
     const baseUrl = apiUrls[i];
     const isLast = i === apiUrls.length - 1;
+    console.log('\n[************************************************************]\n');
 
     try {
       // Health check
@@ -95,9 +96,13 @@ const checkBackendHealth = async () => {
     }
   }
 
-  // If loop finishes without errors
+  // Final state evaluation after all checks
   alertStatus = newState;
-  console.log('[UPDATE] Clean state written to memory:', { hasActiveAlerts: alertStatus.hasActiveAlerts, internalError: alertStatus.internalError });
+  if (!alertStatus.hasActiveAlerts && !alertStatus.internalError) {
+    console.log('\n[CHECK DONE] Clean state written to memory:', { hasActiveAlerts: alertStatus.hasActiveAlerts, internalError: alertStatus.internalError });
+  } else {
+    console.log('\n[CHECK DONE]', { hasActiveAlerts: alertStatus.hasActiveAlerts, internalError: alertStatus.internalError }, 'written to memory');
+  }
   console.log('\n[************************************************************]\n');
 };
 
