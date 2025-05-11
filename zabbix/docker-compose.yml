@@ -26,6 +26,7 @@ services:
       ZABBIX_TOKEN: 9e2260f1f68fee28b31074ce3f860edd8b7f0fde8b01505a0f0227429b0d9cc3
       ZABBIX_MODE: new
       ZABBIX_LOOKBACK_SECONDS: 604800
+      API_PORT: 3000
     ports:
       - "3000:3000"
     restart: unless-stopped

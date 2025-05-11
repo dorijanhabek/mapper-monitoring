@@ -9,9 +9,12 @@ const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10); // How often to c
 // Alertmanager connection
 const ALERTMANAGER_URL = process.env.ALERTMANAGER_URL;
 
+// API server port
+const API_PORT = process.env.API_PORT;
+
 // Fail fast if required env vars are missing
-if (!ALERTMANAGER_URL || !POLL_INTERVAL) {
-    console.error('[ENV ERROR] Missing ALERTMANAGER_URL or POLL_INTERVAL.');
+if (!ALERTMANAGER_URL || !POLL_INTERVAL || !API_PORT) {
+    console.error('[ENV ERROR] Missing ALERTMANAGER_URL, POLL_INTERVAL or API_PORT.');
     process.exit(1);
 }
 
@@ -68,8 +71,8 @@ updateAlertState();
 // Periodically update the alert status
 setInterval(updateAlertState, POLL_INTERVAL);
 
-app.listen(3000, () => {
-    console.log(`[API SERVER] Running on port 3000. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
+app.listen(API_PORT, () => {
+    console.log(`[API SERVER] Running on port ${API_PORT}. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
 });
 
 console.log('[API SERVER] ALERTMANAGER_URL:', ALERTMANAGER_URL);

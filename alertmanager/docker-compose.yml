@@ -24,6 +24,7 @@ services:
     environment:
       POLL_INTERVAL: 10000
       ALERTMANAGER_URL: http://tocka-alertmanager:9093
+      API_PORT: 3000
     ports:
       - "3000:3000"
     depends_on:
