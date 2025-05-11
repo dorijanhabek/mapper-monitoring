@@ -1,44 +1,49 @@
 const express = require('express');
 const axios = require('axios');
-const fs = require('fs');
 const path = require('path');
 const app = express();
 
 const PORT = 80;
 const API_URL = process.env.API_URL;
 const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10);
-const ALERT_FILE = path.join(__dirname, 'tocka', 'alerts.json');
 
-// Ensure alerts.json exists with a default false state
-fs.writeFileSync(ALERT_FILE, JSON.stringify({ hasActiveAlerts: false, internalError: false }, null, 2));
-console.log('[INIT] Reset alerts.json to default false state.');
+// In-memory alert state
+let alertStatus = {
+  hasActiveAlerts: false,
+  internalError: false
+};
 
 // Fail fast if required env vars are missing
 if (!API_URL || !POLL_INTERVAL) {
-    console.error('[ENV ERROR] Missing API_URL or POLL_INTERVAL.');
-    process.exit(1);
-  }
+  console.error('[ENV ERROR] Missing API_URL or POLL_INTERVAL.');
+  process.exit(1);
+}
 
 // Serve static frontend files
 app.use(express.static(path.join(__dirname, 'tocka')));
-
-// Serve alerts.json
-app.get('/alerts', (req, res) => {
-  res.sendFile(ALERT_FILE);
-});
 
 // Health route for container monitoring
 app.get('/health', (req, res) => {
   res.status(200).send('FRONTEND SERVER healthy');
 });
 
-// Write internalError to alerts.json if API dies
+// Internal error state
+app.get('/internal', (req, res) => {
+  res.status(200).json({ internalError: alertStatus.internalError });
+});
+
+// Active alerts status
+app.get('/alerts', (req, res) => {
+  res.status(200).json({ hasActiveAlerts: alertStatus.hasActiveAlerts });
+});
+
+// Backend check and update in-memory state
 const checkBackendHealth = async () => {
   console.log('\n[************************************************************]\n');
   console.log('[CHECK] Starting full backend status check...');
 
-  // Default fallback state
-  let finalState = {
+  // Reset state for new poll
+  let newState = {
     hasActiveAlerts: false,
     internalError: false
   };
@@ -49,13 +54,13 @@ const checkBackendHealth = async () => {
     if (healthRes.status !== 200) throw new Error('[API ERROR] API not responding');
     console.log('[API OK] API is healthy');
 
-    // Check /source
-    const sourceRes = await axios.get(`${API_URL}/source`, { timeout: 3000 });
+    // Check /internal
+    const sourceRes = await axios.get(`${API_URL}/internal`, { timeout: 3000 });
     if (sourceRes.data.internalError) {
       console.warn('[SOURCE ERROR] Detected source error');
-      finalState.internalError = true;
-      fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
-      console.log('[WRITE] internalError=true written to alerts.json');
+      newState.internalError = true;
+      alertStatus = newState;
+      console.log('[UPDATE]', { internalError: alertStatus.internalError },'written to memory');
       console.log('\n[************************************************************]\n');
       return;
     }
@@ -64,25 +69,24 @@ const checkBackendHealth = async () => {
     // Check /alerts
     const alertRes = await axios.get(`${API_URL}/alerts`, { timeout: 3000 });
     if (alertRes.data.hasActiveAlerts) {
-      finalState.hasActiveAlerts = true;
+      newState.hasActiveAlerts = true;
       console.warn('[ALERT DETECTED] Active alerts detected');
-      fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
-      console.log('[WRITE] hasActiveAlerts=true written to alerts.json');
+      alertStatus = newState;
+      console.log('[UPDATE]', { hasActiveAlerts: alertStatus.hasActiveAlerts },'written to memory');
       console.log('\n[************************************************************]\n');
       return;
     }
 
-    // All good — write clean state
     console.log('[ALERT OK] No active alerts reported');
-    fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
-    console.log('[WRITE] No alerts, no internal error written to alerts.json');
+    alertStatus = newState;
+    console.log('[UPDATE] Clean state written to memory:', { hasActiveAlerts: alertStatus.hasActiveAlerts, internalError: alertStatus.internalError });
     console.log('\n[************************************************************]\n');
 
   } catch (error) {
     console.warn('[API ERROR] API unreachable or failure occurred');
-    finalState.internalError = true;
-    fs.writeFileSync(ALERT_FILE, JSON.stringify(finalState, null, 2));
-    console.log('[WRITE] internalError=true written to alerts.json');
+    newState.internalError = true;
+    alertStatus = newState;
+    console.log('[UPDATE]', { internalError: alertStatus.internalError },'written to memory');
     console.log('\n[************************************************************]\n');
   }
 };
