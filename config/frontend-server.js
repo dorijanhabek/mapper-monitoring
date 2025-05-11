@@ -79,7 +79,7 @@ const checkBackendHealth = async () => {
 
     console.log('[ALERT OK] No active alerts reported');
     alertStatus = newState;
-    console.log('[UPDATE] Clean state written to memory:', { alertStatus });
+    console.log('[UPDATE] Clean state written to memory:', { hasActiveAlerts: alertStatus.hasActiveAlerts, internalError: alertStatus.internalError });
     console.log('\n[************************************************************]\n');
 
   } catch (error) {
