@@ -3,7 +3,7 @@ const axios = require('axios');
 const path = require('path');
 const app = express();
 
-const PORT = 80;
+const FRONTEND_PORT = process.env.FRONTEND_PORT;
 const API_URL = process.env.API_URL;
 const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10);
 
@@ -14,8 +14,8 @@ let alertStatus = {
 };
 
 // Fail fast if required env vars are missing
-if (!API_URL || !POLL_INTERVAL) {
-  console.error('[ENV ERROR] Missing API_URL or POLL_INTERVAL.');
+if (!API_URL || !POLL_INTERVAL || !FRONTEND_PORT) {
+  console.error('[ENV ERROR] Missing API_URL, POLL_INTERVAL or FRONTEND_PORT.');
   process.exit(1);
 }
 
@@ -114,8 +114,8 @@ const checkBackendHealth = async () => {
 setInterval(checkBackendHealth, POLL_INTERVAL);
 checkBackendHealth();
 
-app.listen(PORT, () => {
-  console.log(`[FRONTEND SERVER] Running on port ${PORT}. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
+app.listen(FRONTEND_PORT, () => {
+  console.log(`[FRONTEND SERVER] Running on port ${FRONTEND_PORT}. Polling interval set to ${POLL_INTERVAL / 1000} seconds.`);
 });
 
 console.log('[FRONTEND SERVER] API_URL:', API_URL);
