@@ -68,6 +68,7 @@ const checkBackendHealth = async () => {
         newState.internalError = true;
         alertStatus = newState;
         console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
+        console.log('\n[************************************************************]\n');
         return;
       }
       console.log(`[SOURCE OK] ${baseUrl} has no source errors`);
@@ -79,7 +80,10 @@ const checkBackendHealth = async () => {
         console.warn(`[ALERT DETECTED] ${baseUrl} has active alerts`);
         alertStatus = newState;
         console.log('[UPDATE]', { hasActiveAlerts: alertStatus.hasActiveAlerts }, 'written to memory');
-        if (isLast) return;
+        if (isLast) {
+          console.log('\n[************************************************************]\n');
+          return;
+        }
         continue;
       }
       console.log(`[ALERT OK] ${baseUrl} has no alerts`);
@@ -89,6 +93,7 @@ const checkBackendHealth = async () => {
       newState.internalError = true;
       alertStatus = newState;
       console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
+      console.log('\n[************************************************************]\n');
       return;
     }
   }
