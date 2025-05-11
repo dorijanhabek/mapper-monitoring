@@ -72,12 +72,15 @@ function triggerPulseEffect(delay = ANIMATION_DELAY) {
 async function checkAlerts() {
     console.log(`[ALERT CHECK] Checking for alerts...`);
     try {
-        const response = await fetch('./alerts.json'); // Fetch alerts.json file in the same folder
-        if (!response.ok) {
-            throw new Error(`[HTTP ERROR] Status: ${response.status}`);
+        const internalRes = await fetch('/internal');
+        const alertRes = await fetch('/alerts');
+        if (!internalRes.ok || !alertRes.ok) {
+            throw new Error(`[HTTP ERROR] Status: ${internalRes.status} or ${alertRes.status}`);
         }
 
-        const data = await response.json();
+        const internalData = await internalRes.json();
+        const data = await alertRes.json();
+        data.internalError = internalData.internalError;
 
         if (data.internalError) {
             console.log(`[INTERNAL ERROR] Internal error reported.`);

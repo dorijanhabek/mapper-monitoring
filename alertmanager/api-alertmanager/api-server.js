@@ -29,7 +29,7 @@ app.get('/health', (req, res) => {
 });
 
 // Internal error state
-app.get('/source', (req, res) => {
+app.get('/internal', (req, res) => {
     res.status(200).json({ internalError: alertStatus.internalError });
 });
 
