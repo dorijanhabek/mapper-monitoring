@@ -8,18 +8,18 @@ services:
     build:
       context: ../
       dockerfile: config/Dockerfile
+    image: tocka-frontend:latest
     ports:
       - "1234:80"
     restart: unless-stopped
     depends_on:
       - tocka-api-zabbix
-    volumes:
-      - ../tocka:/app/tocka
     networks:
       - tocka-network
 
   tocka-api-zabbix:
     build: ./api-zabbix
+    image: tocka-api-zabbix:latest
     container_name: tocka-api-zabbix
     environment:
       POLL_INTERVAL: 10000

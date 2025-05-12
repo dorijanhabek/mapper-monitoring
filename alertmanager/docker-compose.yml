@@ -8,19 +8,19 @@ services:
     build:
       context: ../
       dockerfile: config/Dockerfile
+    image: tocka-frontend:latest
     ports:
       - "1234:80"
     restart: unless-stopped
     depends_on:
       - tocka-prometheus
       - tocka-alertmanager
-    volumes:
-      - ../tocka:/app/tocka
     networks:
       - tocka-network
 
   tocka-api-alertmanager:
     build: ./api-alertmanager
+    image: tocka-api-alertmanager:latest
     container_name: tocka-api-alertmanager
     environment:
       POLL_INTERVAL: 10000
