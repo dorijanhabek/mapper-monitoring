@@ -14,7 +14,7 @@ async function fetchZabbixProblems({ url, token, mode }) {
     jsonrpc: '2.0',
     method: 'problem.get',
     params: {
-      severities: [4, 5], // High + Disaster
+      severities: [2, 3, 4, 5],
       sortfield: 'eventid',
       sortorder: 'DESC',
       acknowledged: false,
