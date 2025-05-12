@@ -1,6 +1,13 @@
 const axios = require('axios');
 const fs = require('fs');
 
+const ZABBIX_SEVERITIES = process.env.ZABBIX_SEVERITIES?.split(',').map(Number);
+
+// Fail fast if required env vars are missing
+if (!ZABBIX_SEVERITIES || ZABBIX_SEVERITIES.some(isNaN)) {
+  throw new Error("[ENV ERROR] Missing ZABBIX_SEVERITIES.");
+}
+
 async function fetchZabbixProblems({ url, token, mode }) {
   const headers = {
     'Content-Type': 'application/json-rpc'
@@ -14,7 +21,7 @@ async function fetchZabbixProblems({ url, token, mode }) {
     jsonrpc: '2.0',
     method: 'problem.get',
     params: {
-      severities: [2, 3, 4, 5],
+      severities: ZABBIX_SEVERITIES,
       sortfield: 'eventid',
       sortorder: 'DESC',
       acknowledged: false,
