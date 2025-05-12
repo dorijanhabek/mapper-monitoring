@@ -5,6 +5,8 @@ WORKDIR /app
 # Copy the static files
 COPY config/frontend-server.js .
 
+COPY tocka .
+
 RUN npm init -y && \
     npm install express axios cors && \
     sed -i 's/"keywords": \[\]/"keywords": ["TOCKA"]/' package.json && \

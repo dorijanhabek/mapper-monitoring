@@ -13,8 +13,6 @@ services:
     restart: unless-stopped
     depends_on:
       - tocka-api-zabbix
-    volumes:
-      - ../tocka:/app/tocka
     networks:
       - tocka-network
 
