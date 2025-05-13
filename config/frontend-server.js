@@ -6,6 +6,7 @@ const app = express();
 const FRONTEND_PORT = process.env.FRONTEND_PORT;
 const API_URL = process.env.API_URL;
 const API_CUSTOM_NAME = process.env.API_CUSTOM_NAME;
+const SHOW_API_LABEL = process.env.SHOW_API_LABEL;
 const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10);
 
 // In-memory label list
@@ -47,8 +48,11 @@ app.get('/label', (req, res) => {
   res.status(200).json(labelList);
 });
 
-// Utility: update or remove entries from labelList
+// Update or remove entries from labelList
 function updateList(url, status) {
+  // Respect SHOW_API_LABEL toggle
+  if (SHOW_API_LABEL === 'false') return;
+  
   if (!url || !status) return;
 
   if (status === 'CLEAR') {
