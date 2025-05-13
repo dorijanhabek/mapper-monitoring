@@ -18,9 +18,29 @@ const ZABBIX_LOOKBACK_SECONDS = process.env.ZABBIX_LOOKBACK_SECONDS;
 // API server port
 const API_PORT = process.env.API_PORT;
 
-// Fail fast if required env vars are missing
-if (!ZABBIX_URL || !ZABBIX_TOKEN || !POLL_INTERVAL || !ZABBIX_LOOKBACK_SECONDS || !API_PORT) {
-    console.error('[ENV ERROR] Missing ZABBIX_URL, ZABBIX_TOKEN, POLL_INTERVAL, ZABBIX_LOOKBACK_SECONDS or API_PORT.');
+// Validate environment variables
+if (!ZABBIX_URL) {
+    console.error('[ENV ERROR] ZABBIX_URL is missing.');
+    process.exit(1);
+}
+
+if (!ZABBIX_TOKEN) {
+    console.error('[ENV ERROR] ZABBIX_TOKEN is missing.');
+    process.exit(1);
+}
+
+if (!POLL_INTERVAL || isNaN(POLL_INTERVAL) || POLL_INTERVAL <= 0) {
+    console.error('[ENV ERROR] POLL_INTERVAL must be a positive number.');
+    process.exit(1);
+}
+
+if (!ZABBIX_LOOKBACK_SECONDS || isNaN(ZABBIX_LOOKBACK_SECONDS) || ZABBIX_LOOKBACK_SECONDS <= 0) {
+    console.error('[ENV ERROR] ZABBIX_LOOKBACK_SECONDS must be a positive number.');
+    process.exit(1);
+}
+
+if (!API_PORT || isNaN(API_PORT) || API_PORT <= 0) {
+    console.error('[ENV ERROR] API_PORT must be a positive number.');
     process.exit(1);
 }
 

@@ -12,9 +12,19 @@ const ALERTMANAGER_URL = process.env.ALERTMANAGER_URL;
 // API server port
 const API_PORT = process.env.API_PORT;
 
-// Fail fast if required env vars are missing
-if (!ALERTMANAGER_URL || !POLL_INTERVAL || !API_PORT) {
-    console.error('[ENV ERROR] Missing ALERTMANAGER_URL, POLL_INTERVAL or API_PORT.');
+// Validate environment variables
+if (!ALERTMANAGER_URL) {
+    console.error('[ENV ERROR] ALERTMANAGER_URL is missing.');
+    process.exit(1);
+}
+
+if (!POLL_INTERVAL || isNaN(POLL_INTERVAL) || POLL_INTERVAL <= 0) {
+    console.error('[ENV ERROR] POLL_INTERVAL must be a positive number.');
+    process.exit(1);
+}
+
+if (!API_PORT || isNaN(API_PORT) || API_PORT <= 0) {
+    console.error('[ENV ERROR] API_PORT must be a positive number.');
     process.exit(1);
 }
 

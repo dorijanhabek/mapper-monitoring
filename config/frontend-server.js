@@ -19,10 +19,20 @@ let alertStatus = {
   internalError: false
 };
 
-// Fail fast if required env vars are missing
-if (!API_URL || !POLL_INTERVAL || !FRONTEND_PORT) {
-  console.error('[ENV ERROR] Missing API_URL, POLL_INTERVAL or FRONTEND_PORT.');
-  process.exit(1);
+// Validate environment variables
+if (!API_URL) {
+    console.error('[ENV ERROR] API_URL is missing.');
+    process.exit(1);
+}
+
+if (!POLL_INTERVAL || isNaN(POLL_INTERVAL) || POLL_INTERVAL <= 0) {
+    console.error('[ENV ERROR] POLL_INTERVAL must be a positive number.');
+    process.exit(1);
+}
+
+if (!FRONTEND_PORT || isNaN(FRONTEND_PORT) || FRONTEND_PORT <= 0) {
+    console.error('[ENV ERROR] FRONTEND_PORT must be a positive number.');
+    process.exit(1);
 }
 
 // Serve static frontend files

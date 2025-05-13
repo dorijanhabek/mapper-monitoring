@@ -2,10 +2,17 @@ const axios = require('axios');
 const fs = require('fs');
 
 const ZABBIX_SEVERITIES = process.env.ZABBIX_SEVERITIES?.split(',').map(Number);
+const ZABBIX_LOOKBACK_SECONDS = parseInt(process.env.ZABBIX_LOOKBACK_SECONDS, 10);
 
-// Fail fast if required env vars are missing
-if (!ZABBIX_SEVERITIES || ZABBIX_SEVERITIES.some(isNaN)) {
-  throw new Error("[ENV ERROR] Missing ZABBIX_SEVERITIES.");
+// Validate environment variables
+if (!ZABBIX_SEVERITIES || !Array.isArray(ZABBIX_SEVERITIES) || ZABBIX_SEVERITIES.some(isNaN)) {
+    console.error('[ENV ERROR] ZABBIX_SEVERITIES must be an array of numbers.');
+    process.exit(1);
+}
+
+if (!ZABBIX_LOOKBACK_SECONDS || isNaN(ZABBIX_LOOKBACK_SECONDS) || ZABBIX_LOOKBACK_SECONDS <= 0) {
+    console.error('[ENV ERROR] ZABBIX_LOOKBACK_SECONDS must be a positive number.');
+    process.exit(1);
 }
 
 async function fetchZabbixProblems({ url, token, mode }) {
@@ -14,8 +21,7 @@ async function fetchZabbixProblems({ url, token, mode }) {
   };
 
   const now = Math.floor(Date.now() / 1000);
-  const lookback = parseInt(process.env.ZABBIX_LOOKBACK_SECONDS, 10);
-  const sevenDaysAgo = now - lookback;
+  const sevenDaysAgo = now - ZABBIX_LOOKBACK_SECONDS;
 
   const data = {
     jsonrpc: '2.0',
