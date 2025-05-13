@@ -90,14 +90,14 @@ const checkBackendHealth = async () => {
     try {
       // Health check
       const healthRes = await axios.get(`${baseUrl}/health`, { timeout: 3000 });
-      if (healthRes.status !== 200) throw new Error('[API ERROR] API not responding');
+      if (healthRes.status !== 200) throw new Error('[API ERROR] API not responding!');
       console.log(`[API OK] ${apiNames[i]} is healthy`);
       updateList(apiNames[i], 'CLEAR');
 
       // Internal error check
       const sourceRes = await axios.get(`${baseUrl}/internal`, { timeout: 3000 });
       if (sourceRes.data.internalError) {
-        console.warn(`[SOURCE ERROR] ${apiNames[i]} reported source error`);
+        console.warn(`[SOURCE ERROR] ${apiNames[i]} reported source error!`);
         newState.internalError = true;
         alertStatus = newState;
         updateList(apiNames[i], 'SOURCE_ERROR');
@@ -129,7 +129,7 @@ const checkBackendHealth = async () => {
       updateList(apiNames[i], 'CLEAR');
 
     } catch (error) {
-      console.warn(`[API ERROR] ${apiNames[i]} is unreachable or failed`);
+      console.warn(`[API ERROR] ${apiNames[i]} is unreachable or failed!`);
       newState.internalError = true;
       alertStatus = newState;
       updateList(apiNames[i], 'API_ERROR');
