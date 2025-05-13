@@ -94,8 +94,11 @@ const checkBackendHealth = async () => {
         alertStatus = newState;
         updateList(baseUrl, 'internalError');
         console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
-        console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
-        return;
+        if (isLast) {
+          console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
+          return;
+        }
+        continue;
       }
       console.log(`[SOURCE OK] ${baseUrl} has no source errors`);
       updateList(baseUrl, 'clear');
@@ -123,8 +126,11 @@ const checkBackendHealth = async () => {
       alertStatus = newState;
       updateList(baseUrl, 'internalError');
       console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
-      console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
-      return;
+      if (isLast) {
+        console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
+        return;
+      }
+      continue;
     }
   }
 
