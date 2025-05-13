@@ -69,6 +69,45 @@ function triggerPulseEffect(delay = ANIMATION_DELAY) {
     }, delay);
 }
 
+function updateAlertLabels() {
+    fetch('/label')
+      .then(res => res.json())
+      .then(labels => {
+        const container = document.getElementById('apiLabelContainer');
+        container.innerHTML = '';
+  
+        const entries = Object.entries(labels);
+  
+        if (entries.length === 0) {
+          container.style.display = 'none';
+          return;
+        }
+  
+        container.style.display = 'block';
+  
+        entries.forEach(([url, status]) => {
+          if (!status) return;
+  
+          const div = document.createElement('div');
+          div.classList.add('api-label');
+  
+          if (status === 'internalError') {
+            div.classList.add('internal');
+          } else if (status === 'hasActiveAlerts') {
+            div.classList.add('alert');
+          } else {
+            div.classList.add('ok');
+          }
+  
+          div.textContent = `${url} : ${status}`;
+          container.appendChild(div);
+        });
+    })
+    .catch(err => {
+        console.error('[LABEL FETCH ERROR]', err);
+    });
+}
+
 async function checkAlerts() {
     console.log(`[ALERT CHECK] Checking for alerts...`);
     try {

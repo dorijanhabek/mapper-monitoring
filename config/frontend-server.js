@@ -7,6 +7,10 @@ const FRONTEND_PORT = process.env.FRONTEND_PORT;
 const API_URL = process.env.API_URL;
 const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10);
 
+// In-memory label list
+let labelList = {
+};
+
 // In-memory alert state
 let alertStatus = {
   hasActiveAlerts: false,
@@ -37,6 +41,26 @@ app.get('/alerts', (req, res) => {
   res.status(200).json({ hasActiveAlerts: alertStatus.hasActiveAlerts });
 });
 
+// API labels
+app.get('/label', (req, res) => {
+  res.status(200).json(labelList);
+});
+
+// Utility: update or remove entries from labelList
+function updateList(url, status) {
+  if (!url || !status) return;
+
+  if (status === 'clear') {
+    if (labelList[url]) {
+      delete labelList[url];
+      console.log(`[LABEL REMOVED] ${url}`);
+    }
+  } else {
+    labelList[url] = status;
+    console.log(`[LABEL UPDATED] ${url} -> ${status}`);
+  }
+}
+
 // Backend check and update in-memory state
 const checkBackendHealth = async () => {
   console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
@@ -60,6 +84,7 @@ const checkBackendHealth = async () => {
       const healthRes = await axios.get(`${baseUrl}/health`, { timeout: 3000 });
       if (healthRes.status !== 200) throw new Error('[API ERROR] API not responding');
       console.log(`[API OK] ${baseUrl} is healthy`);
+      updateList(baseUrl, 'clear');
 
       // Internal error check
       const sourceRes = await axios.get(`${baseUrl}/internal`, { timeout: 3000 });
@@ -67,11 +92,13 @@ const checkBackendHealth = async () => {
         console.warn(`[SOURCE ERROR] ${baseUrl} reported source error`);
         newState.internalError = true;
         alertStatus = newState;
+        updateList(baseUrl, 'internalError');
         console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
         console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
         return;
       }
       console.log(`[SOURCE OK] ${baseUrl} has no source errors`);
+      updateList(baseUrl, 'clear');
 
       // Alerts check
       const alertRes = await axios.get(`${baseUrl}/alerts`, { timeout: 3000 });
@@ -79,6 +106,7 @@ const checkBackendHealth = async () => {
         newState.hasActiveAlerts = true;
         console.warn(`[ALERT DETECTED] ${baseUrl} has active alerts`);
         alertStatus = newState;
+        updateList(baseUrl, 'hasActiveAlerts');
         console.log('[UPDATE]', { hasActiveAlerts: alertStatus.hasActiveAlerts }, 'written to memory');
         if (isLast) {
           console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
@@ -87,11 +115,13 @@ const checkBackendHealth = async () => {
         continue;
       }
       console.log(`[ALERT OK] ${baseUrl} has no alerts`);
+      updateList(baseUrl, 'clear');
 
     } catch (error) {
       console.warn(`[API ERROR] ${baseUrl} is unreachable or failed`);
       newState.internalError = true;
       alertStatus = newState;
+      updateList(baseUrl, 'internalError');
       console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
       console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
       return;
