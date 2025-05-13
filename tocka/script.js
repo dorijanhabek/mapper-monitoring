@@ -69,6 +69,43 @@ function triggerPulseEffect(delay = ANIMATION_DELAY) {
     }, delay);
 }
 
+function updateAlertLabels() {
+    fetch('/label')
+      .then(res => res.json())
+      .then(labels => {
+        const container = document.getElementById('apiLabelContainer');
+        container.innerHTML = '';
+  
+        const entries = Object.entries(labels);
+  
+        if (entries.length === 0) {
+          container.style.display = 'none';
+          return;
+        }
+  
+        container.style.display = 'block';
+  
+        entries.forEach(([url, status]) => {
+          if (!status) return;
+  
+          const div = document.createElement('div');
+          div.classList.add('api-label');
+  
+          if (status === 'API_ERROR' || status == 'SOURCE_ERROR') {
+            div.classList.add('internal');
+          } else if (status === 'ALERT_DETECTED') {
+            div.classList.add('alert');
+          }
+  
+          div.textContent = `${url} : ${status}`;
+          container.appendChild(div);
+        });
+    })
+    .catch(err => {
+        console.error('[LABEL FETCH ERROR]', err);
+    });
+}
+
 async function checkAlerts() {
     console.log(`[ALERT CHECK] Checking for alerts...`);
     try {
@@ -83,6 +120,7 @@ async function checkAlerts() {
         data.internalError = internalData.internalError;
 
         if (data.internalError) {
+            updateAlertLabels();
             console.log(`[INTERNAL ERROR] Internal error reported.`);
 
             if (currentState === 'internal-error') {
@@ -112,6 +150,7 @@ async function checkAlerts() {
         }
 
         if (data.hasActiveAlerts) {
+            updateAlertLabels()
             console.log(`[ALERT FOUND] Active alerts detected.`);
             if (currentState === 'error') {
                 errorCount++;
@@ -135,6 +174,7 @@ async function checkAlerts() {
             }
 
         } else {
+            updateAlertLabels()
             console.log(`[NO ALERTS] No active alerts detected.`);
             if (currentState === 'error-working' || currentState === 'error' || currentState === 'internal-error' || currentState === 'internal-error-working') {
                 console.log(`[STATE TRANSITION] Changing state to 'normal'.`);
@@ -155,6 +195,7 @@ async function checkAlerts() {
             }
         }
     } catch (error) {
+        updateAlertLabels()
         console.error('[INTERNAL ERROR] Error checking alerts:', error);
     }
 }

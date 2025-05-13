@@ -8,6 +8,43 @@ body {
     cursor: none;
 }
 
+.api-overlay {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    background-color: transparent;
+    padding: 1rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    text-shadow: none;
+    box-shadow: none;
+    color: inherit;
+    z-index: 1000;
+    pointer-events: none;
+    display: none;
+}
+
+.api-label {
+    all: unset;
+    display: block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+    pointer-events: none;
+}
+
+.api-label.alert {
+    color: #ff0000;
+    text-shadow: 0 0 6px #ff0000;
+}
+
+.api-label.internal {
+    color: #ffcc00;
+    text-shadow: 0 0 6px #ffcc00;
+}
+
 .circle {
     width: 30vmin;
     height: 30vmin;
