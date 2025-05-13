@@ -2,7 +2,7 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY api-server.js .
+COPY api-zabbix-server.js .
 
 COPY zabbixRequest.js .
 
@@ -12,6 +12,4 @@ RUN npm init -y && \
     sed -i 's/"author": ""/"author": "Dino Pizek"/' package.json && \
     sed -i 's/"name": ".*"/"name": "TOCKA Monitoring"/' package.json
 
-EXPOSE 3000
-
-CMD ["node", "api-server.js"]
+CMD ["node", "api-zabbix-server.js"]

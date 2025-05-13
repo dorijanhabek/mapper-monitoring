@@ -2,7 +2,7 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY api-server.js .
+COPY api-alertmanager-server.js .
 
 RUN npm init -y && \
     npm install express axios cors && \
@@ -10,6 +10,4 @@ RUN npm init -y && \
     sed -i 's/"author": ""/"author": "Dino Pizek"/' package.json && \
     sed -i 's/"name": ".*"/"name": "TOCKA Monitoring"/' package.json
 
-EXPOSE 3000
-
-CMD ["node", "api-server.js"]
+CMD ["node", "api-alertmanager-server.js"]
