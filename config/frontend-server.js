@@ -100,7 +100,7 @@ const checkBackendHealth = async () => {
         console.warn(`[SOURCE ERROR] ${apiNames[i]} reported source error`);
         newState.internalError = true;
         alertStatus = newState;
-        updateList(apiNames[i], 'SOURCE ERROR');
+        updateList(apiNames[i], 'SOURCE_ERROR');
         console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
         if (isLast) {
           console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
@@ -117,7 +117,7 @@ const checkBackendHealth = async () => {
         newState.hasActiveAlerts = true;
         console.warn(`[ALERT DETECTED] ${apiNames[i]} has active alerts`);
         alertStatus = newState;
-        updateList(apiNames[i], 'ALERT DETECTED');
+        updateList(apiNames[i], 'ALERT_DETECTED');
         console.log('[UPDATE]', { hasActiveAlerts: alertStatus.hasActiveAlerts }, 'written to memory');
         if (isLast) {
           console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
@@ -132,7 +132,7 @@ const checkBackendHealth = async () => {
       console.warn(`[API ERROR] ${apiNames[i]} is unreachable or failed`);
       newState.internalError = true;
       alertStatus = newState;
-      updateList(apiNames[i], 'API ERROR');
+      updateList(apiNames[i], 'API_ERROR');
       console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
       if (isLast) {
         console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
