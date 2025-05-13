@@ -122,6 +122,7 @@ async function checkAlerts() {
         data.internalError = internalData.internalError;
 
         if (data.internalError) {
+            updateAlertLabels();
             console.log(`[INTERNAL ERROR] Internal error reported.`);
 
             if (currentState === 'internal-error') {
@@ -151,6 +152,7 @@ async function checkAlerts() {
         }
 
         if (data.hasActiveAlerts) {
+            updateAlertLabels()
             console.log(`[ALERT FOUND] Active alerts detected.`);
             if (currentState === 'error') {
                 errorCount++;
@@ -174,6 +176,7 @@ async function checkAlerts() {
             }
 
         } else {
+            updateAlertLabels()
             console.log(`[NO ALERTS] No active alerts detected.`);
             if (currentState === 'error-working' || currentState === 'error' || currentState === 'internal-error' || currentState === 'internal-error-working') {
                 console.log(`[STATE TRANSITION] Changing state to 'normal'.`);
@@ -194,6 +197,7 @@ async function checkAlerts() {
             }
         }
     } catch (error) {
+        updateAlertLabels()
         console.error('[INTERNAL ERROR] Error checking alerts:', error);
     }
 }
