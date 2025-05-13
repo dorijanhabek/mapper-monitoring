@@ -76,6 +76,12 @@ const checkBackendHealth = async () => {
   const apiUrls = API_URL.split(',').map(url => url.trim());
   const apiNames = API_CUSTOM_NAME ? API_CUSTOM_NAME.split(',').map(name => name.trim()) : apiUrls;
 
+  // Validate that each API_URL has a corresponding API_CUSTOM_NAME
+  if (apiNames.length !== apiUrls.length) {
+    console.error('[CONFIG ERROR] API_URL and API_CUSTOM_NAME count mismatch.');
+    process.exit(1);
+  }
+
   for (let i = 0; i < apiUrls.length; i++) {
     const baseUrl = apiUrls[i];
     const isLast = i === apiUrls.length - 1;
