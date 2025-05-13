@@ -2,7 +2,7 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY api-server.js .
+COPY api-alertmanager-server.js .
 
 RUN npm init -y && \
     npm install express axios cors && \

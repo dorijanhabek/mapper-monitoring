@@ -2,7 +2,7 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY api-server.js .
+COPY api-zabbix-server.js .
 
 COPY zabbixRequest.js .
 
