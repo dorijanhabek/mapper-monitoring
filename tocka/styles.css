@@ -45,11 +45,6 @@ body {
     text-shadow: 0 0 6px #ffcc00;
 }
 
-.api-label.ok {
-    color: #00ffcc;
-    text-shadow: 0 0 6px #00ffcc;
-}
-
 .circle {
     width: 30vmin;
     height: 30vmin;

@@ -95,8 +95,6 @@ function updateAlertLabels() {
             div.classList.add('internal');
           } else if (status === 'hasActiveAlerts') {
             div.classList.add('alert');
-          } else {
-            div.classList.add('ok');
           }
   
           div.textContent = `${url} : ${status}`;
