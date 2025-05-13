@@ -91,9 +91,9 @@ function updateAlertLabels() {
           const div = document.createElement('div');
           div.classList.add('api-label');
   
-          if (status === 'internalError') {
+          if (status === 'API ERROR' || status == 'SOURCE ERROR') {
             div.classList.add('internal');
-          } else if (status === 'hasActiveAlerts') {
+          } else if (status === 'ALERT DETECTED') {
             div.classList.add('alert');
           }
   

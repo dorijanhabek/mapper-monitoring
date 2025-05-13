@@ -51,7 +51,7 @@ app.get('/label', (req, res) => {
 function updateList(url, status) {
   if (!url || !status) return;
 
-  if (status === 'clear') {
+  if (status === 'CLEAR') {
     if (labelList[url]) {
       delete labelList[url];
       console.log(`[LABEL REMOVED] ${url}`);
@@ -92,7 +92,7 @@ const checkBackendHealth = async () => {
       const healthRes = await axios.get(`${baseUrl}/health`, { timeout: 3000 });
       if (healthRes.status !== 200) throw new Error('[API ERROR] API not responding');
       console.log(`[API OK] ${apiNames[i]} is healthy`);
-      updateList(apiNames[i], 'clear');
+      updateList(apiNames[i], 'CLEAR');
 
       // Internal error check
       const sourceRes = await axios.get(`${baseUrl}/internal`, { timeout: 3000 });
@@ -100,7 +100,7 @@ const checkBackendHealth = async () => {
         console.warn(`[SOURCE ERROR] ${apiNames[i]} reported source error`);
         newState.internalError = true;
         alertStatus = newState;
-        updateList(apiNames[i], 'internalError');
+        updateList(apiNames[i], 'SOURCE ERROR');
         console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
         if (isLast) {
           console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
@@ -109,7 +109,7 @@ const checkBackendHealth = async () => {
         continue;
       }
       console.log(`[SOURCE OK] ${apiNames[i]} has no source errors`);
-      updateList(apiNames[i], 'clear');
+      updateList(apiNames[i], 'CLEAR');
 
       // Alerts check
       const alertRes = await axios.get(`${baseUrl}/alerts`, { timeout: 3000 });
@@ -117,7 +117,7 @@ const checkBackendHealth = async () => {
         newState.hasActiveAlerts = true;
         console.warn(`[ALERT DETECTED] ${apiNames[i]} has active alerts`);
         alertStatus = newState;
-        updateList(apiNames[i], 'hasActiveAlerts');
+        updateList(apiNames[i], 'ALERT DETECTED');
         console.log('[UPDATE]', { hasActiveAlerts: alertStatus.hasActiveAlerts }, 'written to memory');
         if (isLast) {
           console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
@@ -126,13 +126,13 @@ const checkBackendHealth = async () => {
         continue;
       }
       console.log(`[ALERT OK] ${apiNames[i]} has no alerts`);
-      updateList(apiNames[i], 'clear');
+      updateList(apiNames[i], 'CLEAR');
 
     } catch (error) {
       console.warn(`[API ERROR] ${apiNames[i]} is unreachable or failed`);
       newState.internalError = true;
       alertStatus = newState;
-      updateList(apiNames[i], 'internalError');
+      updateList(apiNames[i], 'API ERROR');
       console.log('[UPDATE]', { internalError: alertStatus.internalError }, 'written to memory');
       if (isLast) {
         console.log('\n[++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n');
