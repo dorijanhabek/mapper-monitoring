@@ -78,7 +78,7 @@ const checkBackendHealth = async () => {
 
   // Validate that each API_URL has a corresponding API_CUSTOM_NAME
   if (apiNames.length !== apiUrls.length) {
-    console.error('[CONFIG ERROR] API_URL and API_CUSTOM_NAME count mismatch.');
+    console.error('[ENV ERROR] API_URL and API_CUSTOM_NAME count mismatch.');
     process.exit(1);
   }
 
