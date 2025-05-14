@@ -19,7 +19,7 @@ jobs:
       - name: Build and start Docker Compose (Alertmanager)
         run: |
           cd alertmanager
-          docker compose up -d
+          docker compose up -d --build
           docker ps # Verify containers are running
 
       - name: Verify Docker Compose logs (Alertmanager)
@@ -38,7 +38,7 @@ jobs:
       - name: Build and start Docker Compose (Zabbix)
         run: |
           cd zabbix
-          docker compose up -d
+          docker compose up -d --build
           docker ps # Verify containers are running
 
       - name: Verify Docker Compose logs (Zabbix)
