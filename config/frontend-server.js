@@ -7,6 +7,7 @@ const FRONTEND_PORT = process.env.FRONTEND_PORT;
 const API_URL = process.env.API_URL;
 const API_CUSTOM_NAME = process.env.API_CUSTOM_NAME;
 const SHOW_API_LABEL = process.env.SHOW_API_LABEL;
+const SHOW_GLITCH_ANIMATION = process.env.SHOW_GLITCH_ANIMATION;
 const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10);
 
 // In-memory label list
@@ -56,6 +57,15 @@ app.get('/alerts', (req, res) => {
 // API labels
 app.get('/label', (req, res) => {
   res.status(200).json(labelList);
+});
+
+// Glitch animation toggle
+app.get('/glitch', (req, res) => {
+  if (SHOW_GLITCH_ANIMATION === 'true') {
+    res.status(200).send('Enabled');
+  } else {
+    res.status(204).send('Disabled');
+  }
 });
 
 // Update or remove entries from labelList

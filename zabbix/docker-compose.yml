@@ -2,6 +2,7 @@ services:
   tocka-frontend:
     container_name: tocka-frontend
     environment:
+      SHOW_GLITCH_ANIMATION: true
       SHOW_API_LABEL: true
       API_URL: http://tocka-api-zabbix:3000
       API_CUSTOM_NAME: tocka-api-zabbix

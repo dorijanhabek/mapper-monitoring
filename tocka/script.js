@@ -31,30 +31,38 @@ function setRandomGlitchDirections() {
 function triggerGlitchEffect(
     duration = 2000,
     interval = Math.floor(200 + Math.random() * 400) // 200ms–500ms randomly
-    ) {
-    const tocka = document.getElementById('tocka');
-    const innerCircle = tocka.querySelector('.inner-circle');
-
-    // Remove pulse animation if present
-    innerCircle.classList.remove('animate');
-
-    // Activate glitch effect
-    tocka.classList.add('glitch-active');
-
-    const glitchEffect = setInterval(() => {
-        setRandomGlitchDirections();
-    }, interval);
-
-    setTimeout(() => {
-        clearInterval(glitchEffect);
-        tocka.classList.remove('glitch-active');
-
-        // Reapply pulse animation if we’re still in a working state
-        if (tocka.classList.contains('working')) {
+  ) {
+    fetch('/glitch', { method: 'GET', cache: 'no-store' })
+      .then(res => {
+        if (res.status !== 200) return;
+  
+        const tocka = document.getElementById('tocka');
+        const innerCircle = tocka.querySelector('.inner-circle');
+  
+        // Remove pulse animation if present
+        innerCircle.classList.remove('animate');
+  
+        // Activate glitch effect
+        tocka.classList.add('glitch-active');
+  
+        const glitchEffect = setInterval(() => {
+          setRandomGlitchDirections();
+        }, interval);
+  
+        setTimeout(() => {
+          clearInterval(glitchEffect);
+          tocka.classList.remove('glitch-active');
+  
+          // Reapply pulse animation if we’re still in a working state
+          if (tocka.classList.contains('working')) {
             innerCircle.classList.add('animate');
-        }
-    }, duration);
-}
+          }
+        }, duration);
+    })
+    .catch(err => {
+      console.warn('[GLITCH CHECK FAILED] Could not fetch glitch toggle:', err);
+    });
+}  
 
 function triggerPulseEffect(delay = ANIMATION_DELAY) {
     const tocka = document.getElementById('tocka');
