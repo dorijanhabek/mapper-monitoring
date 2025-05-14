@@ -1,11 +1,11 @@
-name: Test Run Multiple Docker Compose Workflows
+name: Test Run Docker Compose
 
 on:
   workflow_dispatch:
 
 jobs:
   test-run-docker-compose:
-    name: Test Run Multiple Docker Compose Workflows
+    name: Test
     runs-on: ubuntu-latest
 
     steps:
