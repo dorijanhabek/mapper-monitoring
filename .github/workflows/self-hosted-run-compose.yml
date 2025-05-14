@@ -1,4 +1,4 @@
-name: Self Hosted Test Run Docker Compose
+name: Self Hosted - Test Run Docker Compose
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   alertmanager-test:
-    name: Alertmanager API Check
+    name: Alertmanager Docker Compose Check
     runs-on: self-hosted
 
     steps:
@@ -49,7 +49,7 @@ jobs:
           docker ps # Verify containers are stopped
 
   zabbix-test:
-    name: Zabbix API Check
+    name: Zabbix Docker Compose Check
     runs-on: self-hosted
 
     steps:

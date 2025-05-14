@@ -1,0 +1,51 @@
+name: Self Hosted - Validate Environment Variables
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate-env-variables:
+    name: Validate Environment Variables
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Start Docker Compose
+        run: |
+          docker compose up -d --build
+
+      - name: Validate environment variables for Alertmanager API
+        run: |
+          docker exec tocka-api-alertmanager env | grep ALERTMANAGER_URL || (echo "ALERTMANAGER_URL not set!" && exit 1)
+          docker exec tocka-api-alertmanager env | grep POLL_INTERVAL || (echo "POLL_INTERVAL not set!" && exit 1)
+          docker exec tocka-api-alertmanager env | grep API_PORT || (echo "API_PORT not set!" && exit 1)
+
+      - name: Validate environment variables for Zabbix API
+        run: |
+          docker exec tocka-api-zabbix env | grep ZABBIX_URL || (echo "ZABBIX_URL not set!" && exit 1)
+          docker exec tocka-api-zabbix env | grep ZABBIX_TOKEN || (echo "ZABBIX_TOKEN not set!" && exit 1)
+          docker exec tocka-api-zabbix env | grep ZABBIX_MODE || (echo "ZABBIX_MODE not set!" && exit 1)
+          docker exec tocka-api-zabbix env | grep ZABBIX_LOOKBACK_SECONDS || (echo "ZABBIX_LOOKBACK_SECONDS not set!" && exit 1)
+          docker exec tocka-api-zabbix env | grep ZABBIX_SEVERITIES || (echo "ZABBIX_SEVERITIES not set!" && exit 1)
+          docker exec tocka-api-zabbix env | grep API_PORT || (echo "API_PORT not set!" && exit 1)
+
+      - name: Validate environment variables for Frontend
+        run: |
+          docker exec tocka-frontend env | grep API_URL || (echo "API_URL not set!" && exit 1)
+          docker exec tocka-frontend env | grep API_CUSTOM_NAME || (echo "API_CUSTOM_NAME not set!" && exit 1)
+          docker exec tocka-frontend env | grep POLL_INTERVAL || (echo "POLL_INTERVAL not set!" && exit 1)
+          docker exec tocka-frontend env | grep FRONTEND_PORT || (echo "FRONTEND_PORT not set!" && exit 1)
+          docker exec tocka-frontend env | grep SHOW_API_LABEL || (echo "SHOW_API_LABEL not set!" && exit 1)
+          docker exec tocka-frontend env | grep SHOW_GLITCH_ANIMATION || (echo "SHOW_GLITCH_ANIMATION not set!" && exit 1)
+
+      - name: Shut down Docker Compose
+        run: |
+          docker compose down
