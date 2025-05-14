@@ -2,6 +2,7 @@ name: Self Hosted Test Run Multiple Docker Compose Workflows
 
 on:
   workflow_dispatch:
+  pull_request:
 
 jobs:
   test-run-docker-compose:
