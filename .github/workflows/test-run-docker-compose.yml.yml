@@ -16,16 +16,23 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       # Test the first Docker Compose stack
-      - name: Build and start Docker Compose (Alertmanager)
+      - name: Build Docker Compose (Alertmanager)
         run: |
           cd alertmanager
           docker compose up -d --build
+
+      - name: Start Docker Compose (Alertmanager)
+        run: |
+          cd alertmanager
           docker ps # Verify containers are running
+
+      - name: Wait before verifying logs
+        run: sleep 10
 
       - name: Verify Docker Compose logs (Alertmanager)
         run: |
           cd alertmanager
-          docker compose logs
+          docker compose logs tocka-api-alertmanager tocka-frontend
           echo "Alertmanager logs verified successfully."
 
       - name: Shut down Docker Compose stack (Alertmanager)
@@ -35,16 +42,24 @@ jobs:
           docker ps # Verify containers are stopped
 
       # Test the second Docker Compose stack
-      - name: Build and start Docker Compose (Zabbix)
+
+      - name: Build Docker Compose (Zabbix)
         run: |
           cd zabbix
           docker compose up -d --build
+
+      - name: Start Docker Compose (Zabbix)
+        run: |
+          cd zabbix
           docker ps # Verify containers are running
+
+      - name: Wait before verifying logs
+        run: sleep 10
 
       - name: Verify Docker Compose logs (Zabbix)
         run: |
           cd zabbix
-          docker compose logs
+          docker compose logs tocka-api-zabbix tocka-frontend
           echo "Zabbix logs verified successfully."
 
       - name: Shut down Docker Compose stack (Zabbix)
