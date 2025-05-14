@@ -5,7 +5,7 @@ on:
 
 jobs:
   test-run-docker-compose:
-    name: Test Multiple Docker Compose Workflows
+    name: Test Run Multiple Docker Compose Workflows
     runs-on: ubuntu-latest
 
     steps:
