@@ -61,7 +61,7 @@ app.get('/label', (req, res) => {
 
 // Glitch animation toggle
 app.get('/glitch', (req, res) => {
-  if (SHOW_GLITCH_ANIMATION) {
+  if (SHOW_GLITCH_ANIMATION === 'true') {
     res.status(200).send('Enabled');
   } else {
     res.status(204).send('Disabled');
