@@ -1,0 +1,55 @@
+name: Test Run Multiple Docker Compose Workflows
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-run-docker-compose:
+    name: Test Multiple Docker Compose Workflows
+    #runs-on: ubuntu-latest
+    runs-on: self-hosted # RUNNER_ALLOW_RUNASROOT="1" ./run.sh
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      # Test the first Docker Compose stack
+      - name: Build and start Docker Compose (Alertmanager)
+        run: |
+          cd alertmanager
+          docker compose up -d
+          docker ps # Verify containers are running
+
+      - name: Verify Docker Compose logs (Alertmanager)
+        run: |
+          cd alertmanager
+          docker compose logs
+          echo "Alertmanager logs verified successfully."
+
+      - name: Shut down Docker Compose stack (Alertmanager)
+        run: |
+          cd alertmanager
+          docker compose down
+          docker ps # Verify containers are stopped
+
+      # Test the second Docker Compose stack
+      - name: Build and start Docker Compose (Zabbix)
+        run: |
+          cd zabbix
+          docker compose up -d
+          docker ps # Verify containers are running
+
+      - name: Verify Docker Compose logs (Zabbix)
+        run: |
+          cd zabbix
+          docker compose logs
+          echo "Zabbix logs verified successfully."
+
+      - name: Shut down Docker Compose stack (Zabbix)
+        run: |
+          cd zabbix
+          docker compose down
+          docker ps # Verify containers are stopped
