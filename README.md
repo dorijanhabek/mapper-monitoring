@@ -1,3 +1,9 @@
+## License
+
+This project is covered by a custom license. See LICENCE.md for terms.
+
+---
+
 # Frontend Environment Variables
 
 | Variable           | Description                                                                 | Default / Example Value                     |
