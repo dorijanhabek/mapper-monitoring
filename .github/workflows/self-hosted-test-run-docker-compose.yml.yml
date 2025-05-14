@@ -5,7 +5,7 @@ on:
 
 jobs:
   test-run-docker-compose:
-    name: Test Multiple Docker Compose Workflows
+    name: Self Hosted Test Run Multiple Docker Compose Workflows
     runs-on: self-hosted # RUNNER_ALLOW_RUNASROOT="1" ./run.sh
 
     steps:
