@@ -1,4 +1,4 @@
-name: Test Run Multiple Docker Compose Workflows
+name: Self Hosted Test Run Multiple Docker Compose Workflows
 
 on:
   workflow_dispatch:
@@ -6,7 +6,6 @@ on:
 jobs:
   test-run-docker-compose:
     name: Test Multiple Docker Compose Workflows
-    #runs-on: ubuntu-latest
     runs-on: self-hosted # RUNNER_ALLOW_RUNASROOT="1" ./run.sh
 
     steps:
