@@ -18,8 +18,9 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and Start Docker Compose
+      - name: Build and Start Docker Compose for Alertmanager
         run: |
+          cd alertmanager
           docker compose up -d --build
 
       - name: Validate environment variables for Alertmanager API
@@ -27,6 +28,25 @@ jobs:
           docker exec tocka-api-alertmanager env | grep ALERTMANAGER_URL || (echo "ALERTMANAGER_URL not set!" && exit 1)
           docker exec tocka-api-alertmanager env | grep POLL_INTERVAL || (echo "POLL_INTERVAL not set!" && exit 1)
           docker exec tocka-api-alertmanager env | grep API_PORT || (echo "API_PORT not set!" && exit 1)
+
+      - name: Validate environment variables for Frontend (during Alertmanager check)
+        run: |
+          docker exec tocka-frontend env | grep API_URL || (echo "API_URL not set!" && exit 1)
+          docker exec tocka-frontend env | grep API_CUSTOM_NAME || (echo "API_CUSTOM_NAME not set!" && exit 1)
+          docker exec tocka-frontend env | grep POLL_INTERVAL || (echo "POLL_INTERVAL not set!" && exit 1)
+          docker exec tocka-frontend env | grep FRONTEND_PORT || (echo "FRONTEND_PORT not set!" && exit 1)
+          docker exec tocka-frontend env | grep SHOW_API_LABEL || (echo "SHOW_API_LABEL not set!" && exit 1)
+          docker exec tocka-frontend env | grep SHOW_GLITCH_ANIMATION || (echo "SHOW_GLITCH_ANIMATION not set!" && exit 1)
+
+      - name: Shut down Docker Compose for Alertmanager
+        run: |
+          cd alertmanager
+          docker compose down
+
+      - name: Build and Start Docker Compose for Zabbix
+        run: |
+          cd zabbix
+          docker compose up -d --build
 
       - name: Validate environment variables for Zabbix API
         run: |
@@ -37,15 +57,7 @@ jobs:
           docker exec tocka-api-zabbix env | grep ZABBIX_SEVERITIES || (echo "ZABBIX_SEVERITIES not set!" && exit 1)
           docker exec tocka-api-zabbix env | grep API_PORT || (echo "API_PORT not set!" && exit 1)
 
-      - name: Validate environment variables for Frontend
+      - name: Shut down Docker Compose for Zabbix
         run: |
-          docker exec tocka-frontend env | grep API_URL || (echo "API_URL not set!" && exit 1)
-          docker exec tocka-frontend env | grep API_CUSTOM_NAME || (echo "API_CUSTOM_NAME not set!" && exit 1)
-          docker exec tocka-frontend env | grep POLL_INTERVAL || (echo "POLL_INTERVAL not set!" && exit 1)
-          docker exec tocka-frontend env | grep FRONTEND_PORT || (echo "FRONTEND_PORT not set!" && exit 1)
-          docker exec tocka-frontend env | grep SHOW_API_LABEL || (echo "SHOW_API_LABEL not set!" && exit 1)
-          docker exec tocka-frontend env | grep SHOW_GLITCH_ANIMATION || (echo "SHOW_GLITCH_ANIMATION not set!" && exit 1)
-
-      - name: Shut down Docker Compose
-        run: |
+          cd zabbix
           docker compose down
