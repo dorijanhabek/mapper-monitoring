@@ -13,10 +13,15 @@
 </head>
 <body>
     <div class="api-overlay" id="apiLabelContainer"></div>
-    <div id="tocka" class="circle normal">
-        <div class="outer-ring"></div>
-        <div class="middle-ring"></div>
-        <div class="inner-circle"></div>
+    <div id="monitoring-container">
+        <!-- Main central circle -->
+        <div id="main-tocka" class="circle normal main">
+            <div class="outer-ring"></div>
+            <div class="middle-ring"></div>
+            <div class="inner-circle"></div>
+        </div>
+        <!-- Satellite circles will be dynamically added here -->
+        <div id="satellite-container"></div>
     </div>
 
     <script src="script.js"></script>

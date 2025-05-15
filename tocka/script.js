@@ -13,68 +13,258 @@ let normalCount = 0; // Tracks how many intervals the normal state has persisted
 let internalErrorCount = 0; // Tracks internal-error intervals
 let currentState = 'normal'; // Tracks the current state
 
-function setRandomGlitchDirections() {
-    const tocka = document.getElementById('tocka');
-    const glitchIntensity = Math.random() * 400; // Randomize intensity dynamically (0 to 400px)
+// Store circle states
+let circles = {
+    main: {
+        element: null,
+        state: 'normal',
+        errorCount: 0,
+        normalCount: 0,
+        internalErrorCount: 0
+    }
+};
 
-    // Randomize directions for each axis
-    tocka.style.setProperty('--x1', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    tocka.style.setProperty('--y1', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    tocka.style.setProperty('--x2', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    tocka.style.setProperty('--y2', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    tocka.style.setProperty('--x3', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    tocka.style.setProperty('--y3', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    tocka.style.setProperty('--x4', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    tocka.style.setProperty('--y4', `${(Math.random() - 0.5) * glitchIntensity}px`);
+function createSatelliteCircle(id, label) {
+    const container = document.getElementById('satellite-container');
+    const circle = document.createElement('div');
+    circle.id = `satellite-${id}`;
+    circle.className = 'circle satellite normal';
+    circle.innerHTML = `
+        <div class="outer-ring"></div>
+        <div class="middle-ring"></div>
+        <div class="inner-circle"></div>
+        <div class="satellite-label">${label}</div>
+    `;
+    container.appendChild(circle);
+
+    // Add to circles object
+    circles[id] = {
+        element: circle,
+        state: 'normal',
+        errorCount: 0,
+        normalCount: 0,
+        internalErrorCount: 0
+    };
+
+    return circle;
 }
 
-function triggerGlitchEffect(
-    duration = 2000,
-    interval = Math.floor(200 + Math.random() * 400) // 200ms–500ms randomly
-  ) {
-    fetch('/glitch', { method: 'GET', cache: 'no-store' })
-      .then(res => {
-        if (res.status !== 200) return;
-  
-        const tocka = document.getElementById('tocka');
-        const innerCircle = tocka.querySelector('.inner-circle');
-  
-        // Remove pulse animation if present
-        innerCircle.classList.remove('animate');
-  
-        // Activate glitch effect
-        tocka.classList.add('glitch-active');
-  
-        const glitchEffect = setInterval(() => {
-          setRandomGlitchDirections();
-        }, interval);
-  
-        setTimeout(() => {
-          clearInterval(glitchEffect);
-          tocka.classList.remove('glitch-active');
-  
-          // Reapply pulse animation if we’re still in a working state
-          if (tocka.classList.contains('working')) {
-            innerCircle.classList.add('animate');
-          }
-        }, duration);
-    })
-    .catch(err => {
-      console.warn('[GLITCH CHECK FAILED] Could not fetch glitch toggle:', err);
+function positionSatellites() {
+    const container = document.getElementById('satellite-container');
+    const satellites = Object.keys(circles).filter(id => id !== 'main');
+    const totalSatellites = satellites.length;
+    
+    if (totalSatellites === 0) return;
+
+    const radius = 25; // Distance from center in vmin
+    satellites.forEach((id, index) => {
+        const angle = (index / totalSatellites) * 2 * Math.PI;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        
+        const circle = circles[id].element;
+        circle.style.transform = `translate(${x}vmin, ${y}vmin)`;
     });
-}  
+}
 
-function triggerPulseEffect(delay = ANIMATION_DELAY) {
-    const tocka = document.getElementById('tocka');
-    const innerCircle = tocka.querySelector('.inner-circle');
+function setRandomGlitchDirections(element) {
+    const glitchIntensity = Math.random() * 400;
+    
+    element.style.setProperty('--x1', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    element.style.setProperty('--y1', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    element.style.setProperty('--x2', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    element.style.setProperty('--y2', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    element.style.setProperty('--x3', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    element.style.setProperty('--y3', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    element.style.setProperty('--x4', `${(Math.random() - 0.5) * glitchIntensity}px`);
+    element.style.setProperty('--y4', `${(Math.random() - 0.5) * glitchIntensity}px`);
+}
 
-    // Ensure animation is not stacked
+function triggerGlitchEffect(circleId, duration = 2000, interval = Math.floor(200 + Math.random() * 400)) {
+    const circle = circles[circleId];
+    if (!circle || !circle.element) return;
+
+    const element = circle.element;
+    const innerCircle = element.querySelector('.inner-circle');
+
+    // Remove pulse animation if present
     innerCircle.classList.remove('animate');
 
-    // Add pulse effect after a short delay
-    pulseTimeout = setTimeout(() => {
+    // Activate glitch effect
+    element.classList.add('glitch-active');
+
+    const glitchEffect = setInterval(() => {
+        setRandomGlitchDirections(element);
+    }, interval);
+
+    setTimeout(() => {
+        clearInterval(glitchEffect);
+        element.classList.remove('glitch-active');
+
+        // Reapply pulse animation if we're still in a working state
+        if (element.classList.contains('working')) {
+            innerCircle.classList.add('animate');
+        }
+    }, duration);
+}
+
+function triggerPulseEffect(circleId, delay = ANIMATION_DELAY) {
+    const circle = circles[circleId];
+    if (!circle || !circle.element) return;
+
+    const innerCircle = circle.element.querySelector('.inner-circle');
+    innerCircle.classList.remove('animate');
+
+    setTimeout(() => {
         innerCircle.classList.add('animate');
     }, delay);
+}
+
+function setState(circleId, state) {
+    const circle = circles[circleId];
+    if (!circle || !circle.element) return;
+
+    const element = circle.element;
+    const innerCircle = element.querySelector('.inner-circle');
+    circle.state = state;
+
+    // Clear any pending timeouts specific to this circle
+    if (circle.stateTimeout) clearTimeout(circle.stateTimeout);
+    if (circle.pulseTimeout) clearTimeout(circle.pulseTimeout);
+
+    switch (state) {
+        case 'normal':
+            element.className = `circle ${circleId === 'main' ? 'main' : 'satellite'} normal`;
+            circle.normalCount = 0;
+            circle.stateTimeout = setTimeout(() => {
+                setState(circleId, 'working');
+            }, NORMAL_DURATION * POLL_INTERVAL);
+            break;
+
+        case 'working':
+            element.className = `circle ${circleId === 'main' ? 'main' : 'satellite'} normal working`;
+            break;
+
+        case 'error':
+            element.className = `circle ${circleId === 'main' ? 'main' : 'satellite'} error`;
+            break;
+
+        case 'error-working':
+            element.className = `circle ${circleId === 'main' ? 'main' : 'satellite'} error working`;
+            break;
+
+        case 'internal-error':
+            element.className = `circle ${circleId === 'main' ? 'main' : 'satellite'} internal-error`;
+            break;
+
+        case 'internal-error-working':
+            element.className = `circle ${circleId === 'main' ? 'main' : 'satellite'} internal-error working`;
+            break;
+    }
+}
+
+function updateCircleState(circleId, hasActiveAlerts, hasInternalError) {
+    const circle = circles[circleId];
+    if (!circle) return;
+
+    if (hasInternalError) {
+        if (circle.state === 'internal-error') {
+            circle.internalErrorCount++;
+            if (circle.internalErrorCount >= ERROR_DURATION) {
+                setState(circleId, 'internal-error-working');
+            }
+        } else if (circle.state === 'internal-error-working') {
+            // Stay in this state
+        } else {
+            circle.internalErrorCount = 0;
+            setState(circleId, 'internal-error');
+        }
+        
+        if (['internal-error', 'internal-error-working'].includes(circle.state)) {
+            triggerGlitchEffect(circleId);
+        }
+        return;
+    }
+
+    if (hasActiveAlerts) {
+        if (circle.state === 'error') {
+            circle.errorCount++;
+            if (circle.errorCount >= ERROR_DURATION) {
+                setState(circleId, 'error-working');
+            }
+        } else if (circle.state === 'error-working') {
+            // Stay in this state
+        } else {
+            circle.errorCount = 0;
+            setState(circleId, 'error');
+        }
+        
+        if (['error', 'error-working'].includes(circle.state)) {
+            triggerGlitchEffect(circleId);
+        }
+    } else {
+        if (['error-working', 'error', 'internal-error', 'internal-error-working'].includes(circle.state)) {
+            circle.errorCount = 0;
+            circle.internalErrorCount = 0;
+            setState(circleId, 'normal');
+        } else if (circle.state === 'normal') {
+            circle.normalCount++;
+            if (circle.normalCount >= NORMAL_DURATION) {
+                setState(circleId, 'working');
+            }
+        }
+    }
+}
+
+async function checkAlerts() {
+    console.log(`[ALERT CHECK] Checking for alerts...`);
+    try {
+        const internalRes = await fetch('/internal');
+        const alertRes = await fetch('/alerts');
+        const labelRes = await fetch('/label');
+        
+        if (!internalRes.ok || !alertRes.ok || !labelRes.ok) {
+            throw new Error(`[HTTP ERROR] One or more endpoints failed`);
+        }
+
+        const internalData = await internalRes.json();
+        const alertData = await alertRes.json();
+        const labelData = await labelRes.json();
+
+        // Update API labels
+        updateAlertLabels();
+
+        // Process each host's status
+        const hosts = Object.keys(labelData);
+        
+        // Create/update satellite circles
+        hosts.forEach(host => {
+            if (host !== 'main' && !circles[host]) {
+                createSatelliteCircle(host, host);
+                positionSatellites();
+            }
+        });
+
+        // Update main circle (aggregate state)
+        const mainHasAlerts = hosts.some(host => labelData[host] === 'ALERT_DETECTED');
+        const mainHasInternalError = hosts.some(host => ['API_ERROR', 'SOURCE_ERROR'].includes(labelData[host]));
+        updateCircleState('main', mainHasAlerts, mainHasInternalError);
+
+        // Update individual circles
+        hosts.forEach(host => {
+            if (host === 'main') return;
+            const hasAlerts = labelData[host] === 'ALERT_DETECTED';
+            const hasInternalError = ['API_ERROR', 'SOURCE_ERROR'].includes(labelData[host]);
+            updateCircleState(host, hasAlerts, hasInternalError);
+        });
+
+    } catch (error) {
+        console.error('[INTERNAL ERROR] Error checking alerts:', error);
+        // Set all circles to internal error state
+        Object.keys(circles).forEach(circleId => {
+            updateCircleState(circleId, false, true);
+        });
+    }
 }
 
 function updateAlertLabels() {
@@ -114,161 +304,12 @@ function updateAlertLabels() {
     });
 }
 
-async function checkAlerts() {
-    console.log(`[ALERT CHECK] Checking for alerts...`);
-    try {
-        const internalRes = await fetch('/internal');
-        const alertRes = await fetch('/alerts');
-        if (!internalRes.ok || !alertRes.ok) {
-            throw new Error(`[HTTP ERROR] Status: ${internalRes.status} or ${alertRes.status}`);
-        }
-
-        const internalData = await internalRes.json();
-        const data = await alertRes.json();
-        data.internalError = internalData.internalError;
-
-        if (data.internalError) {
-            updateAlertLabels();
-            console.log(`[INTERNAL ERROR] Internal error reported.`);
-
-            if (currentState === 'internal-error') {
-                internalErrorCount++;
-                console.log(
-                    `[INTERNAL ERROR STATE] Staying in 'internal-error'. ${ERROR_DURATION - internalErrorCount} intervals before transitioning to 'internal-error-working'.`
-                );
-                if (internalErrorCount >= ERROR_DURATION) {
-                    console.log(`[STATE TRANSITION] Changing state to 'internal-error-working'.`);
-                    setState('internal-error-working');
-                }
-            } else if (currentState === 'internal-error-working') {
-                console.log(`[INTERNAL-ERROR-WORKING STATE] Errors still present. Staying in 'internal-error-working' state.`);
-            } else {
-                console.log(`[STATE TRANSITION] Changing state to 'internal-error'.`);
-                internalErrorCount = 0;
-                setState('internal-error');
-            }
-            // Centralized glitch trigger
-            if (['internal-error', 'internal-error-working'].includes(currentState)) {
-                triggerGlitchEffect();
-            }
-
-            return;
-        } else {
-            console.log(`[NO INTERNAL ERRORS] No internal issues.`);
-        }
-
-        if (data.hasActiveAlerts) {
-            updateAlertLabels()
-            console.log(`[ALERT FOUND] Active alerts detected.`);
-            if (currentState === 'error') {
-                errorCount++;
-                console.log(
-                    `[ERROR STATE] Staying in 'error' state. ${ERROR_DURATION - errorCount} intervals before transitioning to 'error-working'.`
-                );
-                if (errorCount >= ERROR_DURATION) {
-                    console.log(`[STATE TRANSITION] Changing state to 'error-working'.`);
-                    setState('error-working');
-                }
-            } else if (currentState === 'error-working') {
-                console.log(`[ERROR-WORKING STATE] Alerts still present. Staying in 'error-working' state.`);
-            } else {
-                console.log(`[STATE TRANSITION] Changing state to 'error'.`);
-                errorCount = 0; // Reset error counter
-                setState('error');
-            }
-            // Centralized glitch trigger
-            if (['error', 'error-working'].includes(currentState)) {
-                triggerGlitchEffect();
-            }
-
-        } else {
-            updateAlertLabels()
-            console.log(`[NO ALERTS] No active alerts detected.`);
-            if (currentState === 'error-working' || currentState === 'error' || currentState === 'internal-error' || currentState === 'internal-error-working') {
-                console.log(`[STATE TRANSITION] Changing state to 'normal'.`);
-                errorCount = 0; // Reset error counter
-                internalErrorCount = 0;
-                setState('normal');
-            } else if (currentState === 'normal') {
-                normalCount++;
-                console.log(
-                    `[NORMAL STATE] Staying in 'normal' state. ${NORMAL_DURATION - normalCount} intervals before transitioning to 'working'.`
-                );
-                if (normalCount >= NORMAL_DURATION) {
-                    console.log(`[STATE TRANSITION] Changing state to 'working'.`);
-                    setState('working');
-                }
-            } else if (currentState === 'working') {
-                console.log(`[WORKING STATE] Staying in 'working' state.`);
-            }
-        }
-    } catch (error) {
-        updateAlertLabels()
-        console.error('[INTERNAL ERROR] Error checking alerts:', error);
-    }
-}
-
-window.setState = function (state) {
-    const tocka = document.getElementById('tocka');
-    const innerCircle = tocka.querySelector('.inner-circle');
-
-    // Clear any pending timeouts
-    clearTimeout(stateTimeout);
-    clearTimeout(pulseTimeout);
-
-    console.log(`[STATE TRANSITION] Transitioning from ${currentState} to ${state}`);
-    currentState = state; // Update the current state
-
-    switch (state) {
-        case 'normal':
-            tocka.className = 'circle normal';
-            console.log(`[NORMAL STATE] Entering 'normal' state.`);
-            normalCount = 0; // Reset normal state counter
-            stateTimeout = setTimeout(() => {
-                console.log(`[STATE TRANSITION] Changing state to 'working' state.`);
-                setState('working');
-            }, NORMAL_DURATION * POLL_INTERVAL);
-            break;
-
-        case 'working':
-            tocka.className = 'circle normal working';
-            console.log(`[WORKING STATE] Entering 'working' state.`);
-            break;
-
-        case 'error':
-            console.log(`[ERROR STATE] Entering 'error' state.`);
-            tocka.className = 'circle error';
-            break;
-
-        case 'error-working':
-            tocka.className = 'circle error working';
-            console.log(`[ERROR-WORKING STATE] Entering 'error-working' state.`);
-            break;
-
-        case 'internal-error':
-            console.log(`[INTERNAL-ERROR STATE] Entering 'internal-error' state.`);
-            tocka.className = 'circle internal-error';
-            break;
-
-        case 'internal-error-working':
-            tocka.className = 'circle internal-error working';
-            console.log(`[INTERNAL-ERROR-WORKING STATE] Entering 'internal-error-working' state.`);
-            break;
-    }
-
-    if (['working', 'error-working', 'internal-error-working'].includes(state)) {
-        triggerPulseEffect();
-    }
-};
-
-// Initialize state
-console.log(`[INIT] Initializing state to 'normal'.`);
-setState('normal');
-
-// Immediately check alerts once at startup
-console.log(`[INIT] Performing initial alert check...`);
-checkAlerts();
-
-// Start polling for alerts based on the interval
-console.log(`[INIT] Starting alert polling every ${POLL_INTERVAL / 1000} seconds.`);
-alertPollInterval = setInterval(checkAlerts, POLL_INTERVAL);
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize main circle
+    circles.main.element = document.getElementById('main-tocka');
+    
+    // Start polling
+    checkAlerts();
+    alertPollInterval = setInterval(checkAlerts, POLL_INTERVAL);
+});
