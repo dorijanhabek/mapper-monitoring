@@ -26,6 +26,8 @@ let circles = {
 
 function createSatelliteCircle(id, label) {
     const container = document.getElementById('satellite-container');
+    
+    // Create circle
     const circle = document.createElement('div');
     circle.id = `satellite-${id}`;
     circle.className = 'circle satellite normal';
@@ -49,63 +51,52 @@ function createSatelliteCircle(id, label) {
     return circle;
 }
 
-function positionSatellites() {
-    const container = document.getElementById('satellite-container');
-    const satellites = Object.keys(circles).filter(id => id !== 'main');
-    const totalSatellites = satellites.length;
-    
-    if (totalSatellites === 0) return;
+function createInitialSatellites() {
+    // Create exactly 5 satellites
+    const satellites = ['api1', 'api2', 'api3', 'api4', 'api5'];
+    satellites.forEach(id => {
+        if (!circles[id]) {
+            createSatelliteCircle(id, id);
+        }
+    });
+    positionSatellites(satellites);
+}
 
-    const radius = 25; // Distance from center in vmin
-    satellites.forEach((id, index) => {
-        const angle = (index / totalSatellites) * 2 * Math.PI;
+function positionSatellites(activeHosts) {
+    if (activeHosts.length === 0) return;
+
+    const radius = 35; // Reduced from 50 to bring satellites closer
+    const offset = (2 * Math.PI) / activeHosts.length; // Even spacing between satellites
+    
+    // Sort hosts to ensure consistent ordering
+    activeHosts.sort();
+    
+    activeHosts.forEach((id, index) => {
+        // Calculate angle with offset, starting from top (-PI/2)
+        const baseAngle = -Math.PI / 2; // Start from top
+        const angle = baseAngle + (offset * index);
+        
+        // Calculate position
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
         
         const circle = circles[id].element;
-        circle.style.transform = `translate(${x}vmin, ${y}vmin)`;
+        
+        // Position circle with transform translate from center
+        // Account for the satellite's size (15vmin) to center it properly
+        const satelliteOffset = 7.5; // Half of 15vmin
+        circle.style.transform = `translate(calc(${x}vmin - ${satelliteOffset}vmin), calc(${y}vmin - ${satelliteOffset}vmin))`;
     });
 }
 
-function setRandomGlitchDirections(element) {
-    const glitchIntensity = Math.random() * 400;
-    
-    element.style.setProperty('--x1', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    element.style.setProperty('--y1', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    element.style.setProperty('--x2', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    element.style.setProperty('--y2', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    element.style.setProperty('--x3', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    element.style.setProperty('--y3', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    element.style.setProperty('--x4', `${(Math.random() - 0.5) * glitchIntensity}px`);
-    element.style.setProperty('--y4', `${(Math.random() - 0.5) * glitchIntensity}px`);
+function triggerGlitchEffect(circleId) {
+    // Disabled
+    return;
 }
 
-function triggerGlitchEffect(circleId, duration = 2000, interval = Math.floor(200 + Math.random() * 400)) {
-    const circle = circles[circleId];
-    if (!circle || !circle.element) return;
-
-    const element = circle.element;
-    const innerCircle = element.querySelector('.inner-circle');
-
-    // Remove pulse animation if present
-    innerCircle.classList.remove('animate');
-
-    // Activate glitch effect
-    element.classList.add('glitch-active');
-
-    const glitchEffect = setInterval(() => {
-        setRandomGlitchDirections(element);
-    }, interval);
-
-    setTimeout(() => {
-        clearInterval(glitchEffect);
-        element.classList.remove('glitch-active');
-
-        // Reapply pulse animation if we're still in a working state
-        if (element.classList.contains('working')) {
-            innerCircle.classList.add('animate');
-        }
-    }, duration);
+function setRandomGlitchDirections(element) {
+    // Disabled
+    return;
 }
 
 function triggerPulseEffect(circleId, delay = ANIMATION_DELAY) {
@@ -125,7 +116,6 @@ function setState(circleId, state) {
     if (!circle || !circle.element) return;
 
     const element = circle.element;
-    const innerCircle = element.querySelector('.inner-circle');
     circle.state = state;
 
     // Clear any pending timeouts specific to this circle
@@ -234,16 +224,26 @@ async function checkAlerts() {
         // Update API labels
         updateAlertLabels();
 
-        // Process each host's status
-        const hosts = Object.keys(labelData);
+        // Get hosts excluding 'main'
+        const hosts = Object.keys(labelData).filter(host => host !== 'main');
+        
+        // Remove any satellites that no longer exist in labelData
+        Object.keys(circles).forEach(id => {
+            if (id !== 'main' && !hosts.includes(id)) {
+                if (circles[id].element) circles[id].element.remove();
+                delete circles[id];
+            }
+        });
         
         // Create/update satellite circles
         hosts.forEach(host => {
-            if (host !== 'main' && !circles[host]) {
+            if (!circles[host]) {
                 createSatelliteCircle(host, host);
-                positionSatellites();
             }
         });
+        
+        // Position all satellites
+        positionSatellites(hosts);
 
         // Update main circle (aggregate state)
         const mainHasAlerts = hosts.some(host => labelData[host] === 'ALERT_DETECTED');
@@ -252,7 +252,6 @@ async function checkAlerts() {
 
         // Update individual circles
         hosts.forEach(host => {
-            if (host === 'main') return;
             const hasAlerts = labelData[host] === 'ALERT_DETECTED';
             const hasInternalError = ['API_ERROR', 'SOURCE_ERROR'].includes(labelData[host]);
             updateCircleState(host, hasAlerts, hasInternalError);
@@ -283,7 +282,7 @@ function updateAlertLabels() {
   
         container.style.display = 'block';
   
-        entries.forEach(([url, status]) => {
+        entries.forEach(([name, status]) => {
           if (!status) return;
   
           const div = document.createElement('div');
@@ -295,7 +294,7 @@ function updateAlertLabels() {
             div.classList.add('alert');
           }
   
-          div.textContent = `${url} : ${status}`;
+          div.textContent = `${name} : ${status}`;
           container.appendChild(div);
         });
     })

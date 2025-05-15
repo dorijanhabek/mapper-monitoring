@@ -2,10 +2,10 @@ services:
   tocka-frontend:
     container_name: tocka-frontend
     environment:
-      SHOW_GLITCH_ANIMATION: true
+      SHOW_GLITCH_ANIMATION: false
       SHOW_API_LABEL: true
-      API_URL: http://tocka-api-alertmanager:3000
-      API_CUSTOM_NAME: tocka-api-alertmanager
+      API_URL: http://tocka-api-alertmanager:3000,a,b,v,f
+      API_CUSTOM_NAME: tocka-api,a,b,v,f
       POLL_INTERVAL: 10000
       FRONTEND_PORT: 80
     build:
